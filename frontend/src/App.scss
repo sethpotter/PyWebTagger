@@ -1,0 +1,47 @@
+@import 'https://fonts.googleapis.com/css?family=Inter:300,400,600,700';
+@import '~bootstrap/scss/bootstrap';
+
+// Generate bootstrap width classes.
+@for $i from 1 through 20 {
+    .w-#{$i * 5} {
+        width: ($i * 5%);
+    }
+}
+
+.inter {
+    font-family: Inter, var(--bs-body-font-family);
+}
+
+.bg-smoke {
+    background-color: whitesmoke;
+}
+
+.rounded-tl-0 {
+    border-top-left-radius: 0 !important;
+}
+
+.rounded-tr-0 {
+    border-top-right-radius: 0 !important;
+}
+
+.rounded-bl-0 {
+    border-bottom-left-radius: 0 !important;
+}
+
+.rounded-br-0 {
+    border-bottom-right-radius: 0 !important;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
