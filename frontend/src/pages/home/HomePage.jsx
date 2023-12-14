@@ -4,7 +4,7 @@ import axios from "axios";
 
 import {
     Input, Stack, HStack, VStack, Box, Text, Button, Flex, Container, Spacer, Textarea,
-    Divider, Select, RadioGroup, Radio, Slider, SliderFilledTrack, SliderTrack, SliderThumb, Image
+    Divider, Select, RadioGroup, Radio, Slider, SliderFilledTrack, SliderTrack, SliderThumb, Image, Switch
 } from '@chakra-ui/react'
 import {VFlex, HFlex, BVFlex, BHFlex} from "../../components/WrappedChakra"
 import {load_dataset, load_image, save_caption} from "../../api/DatasetRoutes";
@@ -15,6 +15,8 @@ import {load_dataset, load_image, save_caption} from "../../api/DatasetRoutes";
 import {appendDefaultProps} from "../../util/ChakraUtil";
 import {Dataset} from "../../models/Dataset";
 import {DatasetImage} from "../../models/DatasetImage";
+import {Tag} from "../../components/Tag";
+import {TagSearch} from "../../components/TagSearch";
 appendDefaultProps([Flex, Button, Input], {
     flexGrow: 1,
     flexBasis: 0
@@ -29,8 +31,11 @@ appendDefaultProps([Input], {
 export const HomePage = (props) => {
 
     const [datasetPath, setDatasetPath] = useState('');
-    const [dataset, setDataset] = useState(new Dataset(0, '', 0));
+    const [dataset, setDataset] = useState(new Dataset(0, '', 0, {}));
     const [datasetImage, setDatasetImage] = useState(new DatasetImage(0, {}, '', ''));
+
+    const [tagMode, setTagMode] = useState(false);
+
 
     const displayResizeButton = () => {
         let display = document.getElementById("display");
@@ -70,7 +75,7 @@ export const HomePage = (props) => {
 
         console.log(dataset);
         console.log(index-1);
-        setDataset(new Dataset(index-1, dataset.path, dataset.num_files));
+        setDataset(new Dataset(index-1, dataset.path, dataset.num_files, dataset.available_tags));
 
         load_image(index-1).then((datasetImage) => {
             setDatasetImage(datasetImage);
@@ -117,46 +122,30 @@ export const HomePage = (props) => {
                     <HFlex gap={3}>
                         <VFlex w='50%' bg='gray.100' p={2} borderRadius={5} gap={5}>
                             <BVFlex flexGrow={0} bg='white'>
-                                <Text color='black' mb='1px' ml='10px' fontSize='sm'>Caption</Text>
-                                <Textarea bg='white' color='black' fontSize='sm' placeholder='No caption found...' value={datasetImage.caption} onChange={(e) => handleCaptionUpdate(e.target.value)} />
+                                <HFlex justifyContent='space-between' mb={1}>
+                                    <Text color='black' mb='1px' ml='10px' fontSize='sm'>{(tagMode) ? 'Tags' : 'Caption'}</Text>
+                                    <HStack>
+                                        <Text color='black' mb='1px' ml='10px' fontSize='sm'>Tag Mode</Text>
+                                        <Switch onChange={(e) => setTagMode(e.currentTarget.checked)}/>
+                                    </HStack>
+                                </HFlex>
+                                {
+                                    (tagMode) ?
+                                        <HFlex flexWrap='wrap' gap={1}>
+                                            {datasetImage.caption.split(',').map((val) => <Tag name={val} disabled/>)}
+                                        </HFlex>
+                                        :
+                                        <Textarea bg='white' color='black' fontSize='sm' placeholder='No caption found...' value={datasetImage.caption} onChange={(e) => handleCaptionUpdate(e.target.value)} />
+                                }
                             </BVFlex>
-                            <BVFlex flexGrow={0}>
-                                <Text color='black' mb='1px' ml='10px' fontSize='sm'>Available Tags</Text>
-                                <Input bg='white' placeholder='Search tags...'/>
-                                <BVFlex bg='white'>
-                                    <HFlex></HFlex>
-                                    <Divider/>
-                                    <HFlex></HFlex>
-                                </BVFlex>
-                            </BVFlex>
-                            <BVFlex flexGrow={0} bg='white'>
-                                <Text color='black' mb='1px' ml='10px' fontSize='sm'>Tag Set</Text>
-                                <RadioGroup>
-                                    <BHFlex gap={2}>
-                                        {
-                                            ["First", "Second"].map((value) => {
-                                                return (
-                                                    <BHFlex flexGrow={0} alignItems='center' border='1px solid' borderColor='gray.200' borderRadius={5}>
-                                                        <Radio value={value}></Radio>
-                                                        <Text color='black' pl='10px' mb='3px' verticalAlign='middle' display='flex'>{value}</Text>
-                                                    </BHFlex>
-                                                );
-                                            })
-                                        }
-                                    </BHFlex>
-                                </RadioGroup>
-                            </BVFlex>
-                            <HFlex flexGrow={0} gap={3}>
-                                <VFlex>
-                                    <BHFlex bg='white' p={3}>
-                                        <VFlex>
-                                            <Text color='black' mb='1px' ml='10px' fontSize='sm'>Path to Dataset</Text>
-                                            <Input placeholder='...' />
-                                        </VFlex>
-                                    </BHFlex>
-                                </VFlex>
-                                <Button colorScheme='blue' h>Load Tags</Button>
-                            </HFlex>
+                            {
+                                (tagMode) ?
+                                    <TagSearch enabledTags={datasetImage.caption.split(',').map(val => val.trim())}
+                                               tags={Object.keys(dataset.available_tags)}
+                                               onChange={(tags) => handleCaptionUpdate(tags.join(', '))} />
+                                    :
+                                    <></>
+                            }
                         </VFlex>
                         <VFlex w='50%' gap={3}>
                             <BVFlex id='display' position='relative' alignItems='center' justifyContent='center' p={4} height='1000px' minHeight='1000px'>

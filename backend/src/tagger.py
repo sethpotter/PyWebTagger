@@ -98,7 +98,8 @@ def load_dataset(path: str):
 def load_dataset_tags(dataset: list):
     tags = {}
     for img in dataset:
-        for t in img.tags:
+        img_tags = [t.strip() for t in img.caption.split(',')]
+        for t in img_tags:
             if t in tags:
                 tags[t] = tags[t] + 1
             else:

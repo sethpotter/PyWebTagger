@@ -10,7 +10,7 @@ const load_dataset = (path) => {
     return axios.get(toRouteUrl('load_dataset', request)).then(res => {
         console.log(res);
         console.log(res.data);
-        return new Dataset(res.data.index, res.data.path, res.data.num_files);
+        return new Dataset(res.data.index, res.data.path, res.data.num_files, res.data.available_tags);
     }).catch(err => {
         console.log(err.response);
         return undefined;
