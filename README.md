@@ -1,4 +1,4 @@
-# PyWebTagger
+# PyWebTagger - WIP
 
 This is a standalone dataset creation tool for stable diffusion primarily focused on using tags to describe images.
 
