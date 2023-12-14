@@ -5,18 +5,22 @@ import re
 class DatasetImage:
     def __init__(self, path: str):
         self.path = path
-        self.tagfile = get_tagfile(path)
-        self.tags = []
+        self.caption = ''
         self.load()
 
     def save(self):
-        write_tagfile(self.tagfile, self.tags)
+        tagfile = get_tagfile(self.path)
+        with open(tagfile, 'w') as f:
+            f.write(self.caption)
 
     def load(self):
-        self.tags = read_tagfile(self.tagfile)
+        tagfile = get_tagfile(self.path)
+        if os.path.isfile(tagfile):
+            with open(tagfile, 'r') as f:
+                self.caption = f.read().strip()
 
     def __str__(self):
-        return f"{self.path}-{self.tags}"
+        return f"{self.path}-{self.caption}"
 
 
 class Tagger:
@@ -104,19 +108,6 @@ def load_dataset_tags(dataset: list):
 
 def get_tagfile(path: str):
     return os.path.splitext(path)[0] + '.txt'
-
-
-def read_tagfile(tagfile: str):
-    if os.path.isfile(tagfile):
-        with open(tagfile, 'r') as f:
-            return [t for t in f.read().strip().split(', ') if len(t) > 0]
-    else:
-        return []
-
-
-def write_tagfile(tagfile: str, tags: list):
-    with open(tagfile, 'w') as f:
-        f.write(', '.join(tags))
 
 
 # Sort Alphanumerically

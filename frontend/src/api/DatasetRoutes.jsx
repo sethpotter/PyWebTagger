@@ -22,14 +22,30 @@ const load_image = (index) => {
 
     return axios.get(toRouteUrl('load_image', request)).then(res => {
         console.log(res);
-        return new DatasetImage(res.data.image, res.data.size, res.data.path, res.data.tags);
+        return new DatasetImage(res.data.image, res.data.size, res.data.path, res.data.caption);
     }).catch(err => {
         console.log(err.response);
         return undefined;
     });
 }
 
+const save_caption = (index, caption) => {
+    const request = {
+        index: index,
+        caption: caption
+    };
+
+    return axios.post(toRouteUrl('save_caption', request)).then(res => {
+        console.log(res);
+        return true;
+    }).catch(err => {
+        console.log(err.response);
+        return false;
+    });
+}
+
 export {
     load_dataset,
-    load_image
+    load_image,
+    save_caption
 }

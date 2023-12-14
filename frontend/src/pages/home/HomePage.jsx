@@ -7,7 +7,7 @@ import {
     Divider, Select, RadioGroup, Radio, Slider, SliderFilledTrack, SliderTrack, SliderThumb, Image
 } from '@chakra-ui/react'
 import {VFlex, HFlex, BVFlex, BHFlex} from "../../components/WrappedChakra"
-import {load_dataset, load_image} from "../../api/DatasetRoutes";
+import {load_dataset, load_image, save_caption} from "../../api/DatasetRoutes";
 
 // Unfortunately Chakra does not support adding default props from a theme.
 // So this workaround will have to do for now.
@@ -30,7 +30,7 @@ export const HomePage = (props) => {
 
     const [datasetPath, setDatasetPath] = useState('');
     const [dataset, setDataset] = useState(new Dataset(0, '', 0));
-    const [datasetImage, setDatasetImage] = useState(new DatasetImage(0, {}, '', []));
+    const [datasetImage, setDatasetImage] = useState(new DatasetImage(0, {}, '', ''));
 
     const displayResizeButton = () => {
         let display = document.getElementById("display");
@@ -85,6 +85,17 @@ export const HomePage = (props) => {
         });
     }
 
+    const handleCaptionUpdate = (caption) => {
+        console.log(caption);
+        setDatasetImage(new DatasetImage(datasetImage.image, datasetImage.size, datasetImage.path, caption));
+    }
+
+    const handleCaptionSave = () => {
+        save_caption(dataset.index, datasetImage.caption).then(() => {
+            console.log("Done");
+        });
+    }
+
 
     useEffect(() => {
         displayResizeButton();
@@ -107,7 +118,7 @@ export const HomePage = (props) => {
                         <VFlex w='50%' bg='gray.100' p={2} borderRadius={5} gap={5}>
                             <BVFlex flexGrow={0} bg='white'>
                                 <Text color='black' mb='1px' ml='10px' fontSize='sm'>Caption</Text>
-                                <Textarea bg='white' placeholder='...' />
+                                <Textarea bg='white' color='black' fontSize='sm' placeholder='No caption found...' value={datasetImage.caption} onChange={(e) => handleCaptionUpdate(e.target.value)} />
                             </BVFlex>
                             <BVFlex flexGrow={0}>
                                 <Text color='black' mb='1px' ml='10px' fontSize='sm'>Available Tags</Text>
@@ -184,7 +195,7 @@ export const HomePage = (props) => {
                                 <Button colorScheme='blue' h onClick={() => handleIndexChange(dataset.index + 1 - 1)}>Previous</Button>
                                 <Button colorScheme='blue' h onClick={() => handleIndexChange(dataset.index + 1 + 1)}>Next</Button>
                             </HFlex>
-                            <Button colorScheme='blue' h>Save Tags</Button>
+                            <Button colorScheme='blue' h onClick={() => handleCaptionSave()}>Save Caption</Button>
                         </VFlex>
                     </HFlex>
                 </VFlex>

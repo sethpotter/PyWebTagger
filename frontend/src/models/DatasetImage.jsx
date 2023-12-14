@@ -1,8 +1,8 @@
 export class DatasetImage {
-    constructor(image, size, path, tags) {
+    constructor(image, size, path, caption) {
         this.image = image;
         this.size = size;
         this.path = path;
-        this.tags = tags;
+        this.caption = caption;
     }
 }

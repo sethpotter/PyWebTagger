@@ -30,19 +30,24 @@ async def home():
 
 @app.get("/load_dataset")
 async def load_dataset(path: str):
-    print("Backend! Got Request", path)
     tagger.load_dataset(path)
     return {'index': tagger.index, 'path': tagger.path, 'num_files': tagger.num_files}
 
 
 @app.get("/load_image")
 async def load_image(index: int):
-    print("Backend! Got Request", index)
     dataset_image = tagger.get_image(index)
     img = Image.open(dataset_image.path)
     with open(dataset_image.path, 'rb') as image_file:
         encoded_string = base64.b64encode(image_file.read())
-    return {'image': encoded_string, 'size': {'width': img.width, 'height': img.height}, 'path': dataset_image.path, 'tags': dataset_image.tags}
+    return {'image': encoded_string, 'size': {'width': img.width, 'height': img.height}, 'path': dataset_image.path, 'caption': dataset_image.caption}
+
+@app.post("/save_caption")
+async def save_caption(index: int, caption: str):
+    dataset_image = tagger.get_image(index)
+    dataset_image.caption = caption
+    dataset_image.save()
+    return {'Success'}
 
 
 @app.get("/gelbooru")
