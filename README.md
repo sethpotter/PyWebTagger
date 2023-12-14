@@ -6,7 +6,7 @@ This is a standalone dataset creation tool for stable diffusion primarily focuse
 
 ## Getting Started
 
-You can install this extension by using Git bash and the following command
+You can install this program by using Git bash and the following command
 
 ```git clone https://github.com/SesuMoe/PyWebTagger.git```
 
