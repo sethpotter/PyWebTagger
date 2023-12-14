@@ -4,6 +4,8 @@ This is a standalone dataset creation tool for stable diffusion primarily focuse
 
 ```1girl, 1boy, armor, axe, braid, gradient_background, highres, lightning, short_hair, long_hair, shorts, solo, weapon, white_hair, blue_eyes, brown_hair, brown_eyes```
 
+![1](./showcase/1.jpg)
+
 ## Getting Started
 
 You can install this extension by using Git bash and the following command

@@ -49,14 +49,14 @@ export const TagSearch = (props) => {
                 <BVFlex bg='white'>
                     <HFlex flexWrap='wrap' gap={1}>
                         {
-                            tags.filter((val) => val.includes(tagSearch)).splice(page * tagsPerPage, tagsPerPage).map((val) =>
+                            tags.filter((val) => val.includes(tagSearch)).splice(page * tagsPerPage, tagsPerPage).sort().map((val) =>
                                 <Tag name={val} value={activeTags.includes(val)} onToggle={(active) => handleActiveTags(active, val)}/>
                             )
                         }
                     </HFlex>
                     <Divider/>
                     <HFlex alignItems='center'>
-                        <Button colorScheme='blue' onClick={() => handlePage(page-1)}>Prev</Button>
+                        <Button colorScheme='blue' onClick={() => handlePage(page-1)}>Previous</Button>
                         <Text mb={0} p={2} color='black'>{page+1}/{Math.floor(tags.length / tagsPerPage)+1}</Text>
                         <Button colorScheme='blue' onClick={() => handlePage(page+1)}>Next</Button>
                     </HFlex>
