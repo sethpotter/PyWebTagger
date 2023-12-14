@@ -1,1 +1,37 @@
-### WIP
+# PyWebTagger
+
+This is a standalone dataset creation tool for stable diffusion primarily focused on using tags to describe images.
+
+```1girl, 1boy, armor, axe, braid, gradient_background, highres, lightning, short_hair, long_hair, shorts, solo, weapon, white_hair, blue_eyes, brown_hair, brown_eyes```
+
+## Getting Started
+
+You can install this extension by using Git bash and the following command
+
+```git clone https://github.com/SesuMoe/PyWebTagger.git .```
+
+Once installed run the **setup.bat** and wait for the installation to finish. Then use the **start.bat**
+
+***TODO Shell***
+
+## Usage
+
+### Dataset
+
+Provide the path to your dataset, and it will recursively find matching image / caption pairs (e.g. example.txt / example.png). **It does not support captions in the filename.**
+
+### Tags
+
+### TODO
+
+## Goals
+
+These are some of the long term goals I wish to achieve while working on this project.
+
+* Booru Scrapping - Able to fetch images directly and add them to the dataset.
+* Reverse-Image Tag Search - Uses a reverse image service to find and fetch tags from the internet.
+* Drag and Drop - Add images to the dataset by dragging and dropping into the UI.
+* Interrogator - Ability to inference images to make captioning faster.
+* Cropping - Able to crop images whether this is on another page or using the display.
+* Auto-Cropping - Set and go cropping with face detection if possible.
+* Bulk Tag Editor - Edit sets of tags at a time.
