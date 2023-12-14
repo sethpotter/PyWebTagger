@@ -30,7 +30,11 @@ appendDefaultProps([Input], {
 
 export const HomePage = (props) => {
 
-    const [datasetPath, setDatasetPath] = useState('');
+    const [datasetPath, setDatasetPath] = useState(() => {
+        const stored = localStorage.getItem('datasetPath');
+        return (stored === undefined) ? '' : localStorage.getItem('datasetPath');
+    });
+
     const [dataset, setDataset] = useState(new Dataset(0, '', 0, {}));
     const [datasetImage, setDatasetImage] = useState(new DatasetImage(0, {}, '', ''));
 
@@ -87,6 +91,10 @@ export const HomePage = (props) => {
             console.log(data);
             console.log("SET DATA");
             setDataset(data);
+
+            load_image(0).then((datasetImage) => {
+                setDatasetImage(datasetImage);
+            });
         });
     }
 
@@ -105,6 +113,10 @@ export const HomePage = (props) => {
     useEffect(() => {
         displayResizeButton();
     }, []);
+
+    useEffect(() => {
+        localStorage.setItem('datasetPath', datasetPath);
+    }, [datasetPath]);
 
     return (
         <>
