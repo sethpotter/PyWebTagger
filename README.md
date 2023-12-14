@@ -10,7 +10,11 @@ You can install this extension by using Git bash and the following command
 
 ```git clone https://github.com/SesuMoe/PyWebTagger.git .```
 
-Once installed run the **setup.bat** and wait for the installation to finish. Then use the **start.bat** and navigate to http://localhost:3000
+Once installed run the **setup.bat** and wait for the installation to finish. 
+Then use the **start.bat** and go to http://localhost:3000 in your browser.
+
+*Note: This is meant for local usage only. Use caution if you attempt to expose the webserver to the public, 
+as you may risk exposing your personal data.*
 
 ***TODO Shell***
 
