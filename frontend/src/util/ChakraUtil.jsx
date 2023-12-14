@@ -1,15 +1,10 @@
-const applyDefaultProps = (components, props) => {
-    components.forEach((com) => com.defaultProps = props);
-}
-
-const applyFlexGrowProp = (components) => {
-    const props = {
-        flexGrow: 1
-    };
-    applyDefaultProps(components, props);
+const appendDefaultProps = (components, props) => {
+    components.forEach((com) => com.defaultProps = {
+        ...com.defaultProps,
+        ...props
+    });
 }
 
 export {
-    applyDefaultProps,
-    applyFlexGrowProp
+    appendDefaultProps
 }

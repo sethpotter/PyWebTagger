@@ -1,9 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pygelbooru import Gelbooru
+from src.tagger import Tagger
+import base64
+from PIL import Image
 
 app = FastAPI()
 gelbooru = Gelbooru()
+tagger = Tagger()
 
 origins = [
     "http://localhost:3000",
@@ -21,7 +25,24 @@ app.add_middleware(
 
 @app.get("/")
 async def home():
-    return {"View the backend documentation using https://localhost:8000/docs"}
+    return "View the backend documentation using https://localhost:8000/docs"
+
+
+@app.get("/load_dataset")
+async def load_dataset(path: str):
+    print("Backend! Got Request", path)
+    tagger.load_dataset(path)
+    return {'index': tagger.index, 'path': tagger.path, 'num_files': tagger.num_files}
+
+
+@app.get("/load_image")
+async def load_image(index: int):
+    print("Backend! Got Request", index)
+    dataset_image = tagger.get_image(index)
+    img = Image.open(dataset_image.path)
+    with open(dataset_image.path, 'rb') as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    return {'image': encoded_string, 'size': {'width': img.width, 'height': img.height}, 'path': dataset_image.path, 'tags': dataset_image.tags}
 
 
 @app.get("/gelbooru")
