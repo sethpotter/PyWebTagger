@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 
-import {Box, Divider, Input, Text} from "@chakra-ui/react";
+import {Box, Button, Divider, Input, Text} from "@chakra-ui/react";
 import {BVFlex, HFlex} from "./WrappedChakra";
 import {Tag} from "./Tag";
 
@@ -8,8 +8,9 @@ export const TagSearch = (props) => {
 
     const [tagSearch, setTagSearch] = useState('');
     const [activeTags, setActiveTags] = useState([]);
+    const [page, setPage] = useState(0);
 
-    const {enabledTags, tags, onChange} = props;
+    const {enabledTags, tags, tagsPerPage = 75, onChange, onReloadTags} = props;
 
     const handleActiveTags = (active, val) => {
         const updatedTags = active
@@ -26,6 +27,17 @@ export const TagSearch = (props) => {
         setActiveTags(enabledTags);
     }, [enabledTags])
 
+    const handlePage = (value) => {
+        if(value < 0)
+            value = 0;
+
+        const pageLimit = Math.floor(tags.length / tagsPerPage);
+        if(value > pageLimit)
+            value = pageLimit;
+
+        setPage(value);
+    }
+
     return (
         <>
             <BVFlex flexGrow={0} gap={3}>
@@ -37,12 +49,17 @@ export const TagSearch = (props) => {
                 <BVFlex bg='white'>
                     <HFlex flexWrap='wrap' gap={1}>
                         {
-                            tags.filter((val) => val.includes(tagSearch)).map((val) =>
-                                <Tag name={val} value={activeTags.includes(val)} onToggle={(active) => handleActiveTags(active, val)}/>)
+                            tags.filter((val) => val.includes(tagSearch)).splice(page * tagsPerPage, tagsPerPage).map((val) =>
+                                <Tag name={val} value={activeTags.includes(val)} onToggle={(active) => handleActiveTags(active, val)}/>
+                            )
                         }
                     </HFlex>
                     <Divider/>
-                    <HFlex></HFlex>
+                    <HFlex alignItems='center'>
+                        <Button colorScheme='blue' onClick={() => handlePage(page-1)}>Prev</Button>
+                        <Text mb={0} p={2} color='black'>{page+1}/{Math.floor(tags.length / tagsPerPage)+1}</Text>
+                        <Button colorScheme='blue' onClick={() => handlePage(page+1)}>Next</Button>
+                    </HFlex>
                 </BVFlex>
             </BVFlex>
         </>
