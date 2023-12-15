@@ -3,8 +3,29 @@ import React, {useEffect, useState} from 'react';
 import axios from "axios";
 
 import {
-    Input, Stack, HStack, VStack, Box, Text, Button, Flex, Container, Spacer, Textarea,
-    Divider, Select, RadioGroup, Radio, Slider, SliderFilledTrack, SliderTrack, SliderThumb, Image, Switch
+    Input,
+    Stack,
+    HStack,
+    VStack,
+    Box,
+    Text,
+    Button,
+    Flex,
+    Container,
+    Spacer,
+    Textarea,
+    Divider,
+    Select,
+    RadioGroup,
+    Radio,
+    Slider,
+    SliderFilledTrack,
+    SliderTrack,
+    SliderThumb,
+    Image,
+    Switch,
+    NumberInput,
+    NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper
 } from '@chakra-ui/react'
 import {VFlex, HFlex, BVFlex, BHFlex} from "../../components/WrappedChakra"
 import {load_dataset, load_image, save_caption} from "../../api/DatasetRoutes";
@@ -40,6 +61,7 @@ export const HomePage = (props) => {
 
     const [tagMode, setTagMode] = useState(false);
     const [autoSave, setAutoSave] = useState(false);
+    const [tagsToDisplay, setTagsToDisplay] = useState(100);
 
 
     const displayResizeButton = () => {
@@ -152,7 +174,8 @@ export const HomePage = (props) => {
                                 (tagMode) ?
                                     <TagSearch enabledTags={datasetImage.caption.split(',').map(val => val.trim())}
                                                tags={Object.keys(dataset.available_tags)}
-                                               onChange={(tags) => handleCaptionUpdate(tags.join(', '))} />
+                                               onChange={(tags) => handleCaptionUpdate(tags.join(', '))}
+                                               tagsPerPage={tagsToDisplay} />
                                     :
                                     <></>
                             }
@@ -167,6 +190,21 @@ export const HomePage = (props) => {
                                         <Text color='black' mb='1px' ml='10px' fontSize='sm' title='Save the caption when the display changes'>Auto Save</Text>
                                         <Switch onChange={(e) => setAutoSave(e.currentTarget.checked)}/>
                                     </HStack>
+                                    {
+                                        (tagMode) ?
+                                            <HStack>
+                                                <Text color='black' mb='1px' ml='10px' fontSize='sm' title=''>Tags Per Page</Text>
+                                                <NumberInput color='black' maxW='60px' size='xs' min={1} max={999} value={tagsToDisplay} onChange={(val) => setTagsToDisplay(val)} allowMouseWheel>
+                                                    <NumberInputField/>
+                                                    <NumberInputStepper>
+                                                        <NumberIncrementStepper/>
+                                                        <NumberDecrementStepper/>
+                                                    </NumberInputStepper>
+                                                </NumberInput>
+                                            </HStack>
+                                            :
+                                            <></>
+                                    }
                                 </HStack>
 
                             </BVFlex>
