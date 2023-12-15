@@ -2,7 +2,7 @@
 
 This is a standalone dataset creation tool for stable diffusion primarily focused on using tags to describe images.
 
-![1](./showcase/1.jpg)
+![2](./showcase/2.jpg)
 
 ## Getting Started
 
@@ -35,7 +35,7 @@ These are some of the long term goals I wish to achieve while working on this pr
 * Booru Scrapping - Able to fetch images directly and add them to the dataset.
 * Reverse-Image Tag Search - Uses a reverse image service to find and fetch tags from the internet.
 * Drag and Drop - Add images to the dataset by dragging and dropping into the UI.
-* Interrogator - Ability to inference images to make captioning faster.
+* ~~Interrogator - Ability to inference images to make captioning faster.~~ Done.
 * Cropping - Able to crop images whether this is on another page or using the display.
 * Auto-Cropping - Set and go cropping with face detection if possible.
 * Bulk Tag Editor - Edit sets of tags at a time.
