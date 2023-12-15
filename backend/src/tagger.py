@@ -8,6 +8,9 @@ from sentence_transformers import SentenceTransformer, util
 import torch
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from multiprocessing import Manager, Pool
+from imagededup.methods import PHash
+from imagededup.methods import AHash
+from imagededup.methods import DHash
 
 class DatasetImage:
     def __init__(self, path: str):
@@ -103,50 +106,27 @@ def load_dataset(path: str):
 
 def make_hash(datasetImage):
     try:
-        with Image.open(datasetImage.path) as img:
-            img_hash = imagehash.average_hash(img, hash_size=16)
-            return (img_hash, datasetImage.path)
+        img_hash = DHash().encode_image(image_file=datasetImage.path)
+        return (img_hash, os.path.basename(datasetImage.path))
     except Exception as e:
         traceback.print_exc()
         return None
 
 
-def scan_duplicates_hash(dataset: list[DatasetImage]):
-    with Pool(processes=16) as p:
-        results = p.map(make_hash, [datasetImage for datasetImage in dataset], chunksize=1)
+def scan_duplicates(dataset: [DatasetImage]):
+    with Pool(processes=8) as p:
+        results = p.map(make_hash, [datasetImage for datasetImage in dataset], chunksize=8)
 
-    hash_dict = {}
+    print(results)
 
-    print("Pool closed")
+    encodings = {}
 
     for t in results:
-        img_hash, path = t
-        if img_hash in hash_dict:
-            hash_dict[img_hash].append(path)
-        else:
-            hash_dict[img_hash] = [path]
+        img_hash, filename = t
+        encodings[filename] = img_hash
 
-    for images in hash_dict.values():
-        if len(images) > 1:
-            print(images)
-
-
-def scan_duplicates_clip(dataset: list[DatasetImage]):
-    print('Loading CLIP Model...')
-    print(torch.cuda.is_available())
-    print(torch.cuda.get_device_name(0))
-    model = SentenceTransformer('clip-ViT-L-14')
-    image_paths = [datasetImage.path for datasetImage in dataset]
-    encoded_images = model.encode([Image.open(path) for path in image_paths],
-                                 batch_size=512,
-                                 convert_to_tensor=True,
-                                 show_progress_bar=True)
-    processed_images = util.paraphrase_mining_embeddings(encoded_images)
-    duplicates = [image for image in processed_images if image[0] >= 1]
-    for score, image_id1, image_id2 in duplicates:
-        print("\nScore: {:.3f}%".format(score * 100))
-        print(image_paths[image_id1])
-        print(image_paths[image_id2])
+    duplicates = DHash().find_duplicates(encoding_map=encodings, scores=True)
+    print(duplicates)
 
 
 def load_dataset_tags(dataset: list):
