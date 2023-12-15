@@ -190,47 +190,48 @@ export const HomePage = (props) => {
                                 })()
                             }
                             <BVFlex flexGrow={0} bg='white'>
-                                <Text color='black' ml={2}>Settings</Text>
-                                <HStack>
-                                    <HStack>
-                                        <Text color='black' mb='1px' fontSize='sm' title='Activates tag mode which makes it easier to caption images with buttons'>Tag Mode</Text>
-                                        <Switch onChange={(e) => setTagMode(e.currentTarget.checked)}/>
-                                    </HStack>
-                                    <HStack>
-                                        <Text color='black' mb='1px' fontSize='sm' title='Save the caption when the image changes'>Auto Save</Text>
-                                        <Switch onChange={(e) => setAutoSave(e.currentTarget.checked)}/>
-                                    </HStack>
-                                    {
-                                        (tagMode) ?
-                                            <>
-                                                <HStack>
-                                                    <Text color='black' mb='1px' fontSize='sm' title='Show the number of occurances beside the tag'>Tag Counts</Text>
-                                                    <Switch onChange={(e) => setShowTagCounts(e.currentTarget.checked)}/>
-                                                </HStack>
-                                                <HStack gap={0}>
-                                                    <Text color='black' mb='1px' fontSize='sm' w='140px' title='The sorting mode of tags on the tag editor'>Sorting Mode</Text>
-                                                    <Select color='black' size='xs'>
-                                                        <option value='0'>Alphanumeric</option>
-                                                        <option value='1'>Tag count</option>
-                                                    </Select>
-                                                </HStack>
-                                                <HStack>
-                                                    <Text color='black' mb='1px' fontSize='sm' title='The amount of tags to display per page'>Tags Per Page</Text>
-                                                    <NumberInput color='black' maxW='65px' size='xs' min={1} max={999} value={tagsToDisplay} onChange={(val) => setTagsToDisplay(val)} allowMouseWheel>
-                                                        <NumberInputField/>
-                                                        <NumberInputStepper>
-                                                            <NumberIncrementStepper/>
-                                                            <NumberDecrementStepper/>
-                                                        </NumberInputStepper>
-                                                    </NumberInput>
-                                                </HStack>
-                                            </>
-                                            :
-                                            <></>
-                                    }
+                                <Text color='black' ml={2} mb={0}>Settings</Text>
+                                <VFlex p={2}>
+                                    <VFlex gap={1} w='25%'>
+                                        <HStack>
+                                            <Text color='black' mb='1px' fontSize='sm' title='Activates tag mode which makes it easier to caption images with buttons'>Tag Mode</Text>
+                                            <Switch onChange={(e) => setTagMode(e.currentTarget.checked)}/>
+                                        </HStack>
+                                        <HStack>
+                                            <Text color='black' mb='1px' fontSize='sm' title='Save the caption when the image changes'>Auto Save</Text>
+                                            <Switch onChange={(e) => setAutoSave(e.currentTarget.checked)}/>
+                                        </HStack>
+                                        {
+                                            (tagMode) ?
+                                                <>
+                                                    <HStack>
+                                                        <Text color='black' mb='1px' fontSize='sm' title='Show the number of occurances beside the tag'>Tag Counts</Text>
+                                                        <Switch onChange={(e) => setShowTagCounts(e.currentTarget.checked)}/>
+                                                    </HStack>
+                                                    <HStack gap={0}>
+                                                        <Text color='black' mb='1px' fontSize='sm' w='140px' title='The sorting mode of tags on the tag editor'>Sorting Mode</Text>
+                                                        <Select color='black' size='xs'>
+                                                            <option value='0'>Alphanumeric</option>
+                                                            <option value='1'>Tag count</option>
+                                                        </Select>
+                                                    </HStack>
+                                                    <HStack>
+                                                        <Text color='black' mb='1px' fontSize='sm' title='The amount of tags to display per page'>Tags Per Page</Text>
+                                                        <NumberInput color='black' maxW='65px' size='xs' min={1} max={999} value={tagsToDisplay} onChange={(val) => setTagsToDisplay(val)} allowMouseWheel>
+                                                            <NumberInputField/>
+                                                            <NumberInputStepper>
+                                                                <NumberIncrementStepper/>
+                                                                <NumberDecrementStepper/>
+                                                            </NumberInputStepper>
+                                                        </NumberInput>
+                                                    </HStack>
+                                                </>
+                                                :
+                                                <></>
+                                        }
+                                    </VFlex>
 
-
-                                </HStack>
+                                </VFlex>
 
                             </BVFlex>
                         </VFlex>
