@@ -16,4 +16,4 @@ IF NOT EXIST venv\ (
 call ./venv/Scripts/activate.bat
 
 echo Installing requirements...
-pip install --disable-pip-version-check -q -r requirements.txt
+pip install --disable-pip-version-check -r requirements.txt

@@ -1,6 +1,7 @@
 import os
 import re
-
+from PIL import Image
+import imagehash
 
 class DatasetImage:
     def __init__(self, path: str):
@@ -93,6 +94,17 @@ def load_dataset(path: str):
     for f in files:
         dataset.append(DatasetImage(f))
     return dataset
+
+
+def scan_duplicates(dataset: list[DatasetImage]):
+    hashes = []
+    for datasetImage in dataset:
+        with Image.open(datasetImage.path) as img:
+            img_hash = imagehash.average_hash(img)
+            if img_hash in hashes:
+                print("Possible duplicate image", datasetImage.path)
+            else:
+                hashes.append(img_hash)
 
 
 def load_dataset_tags(dataset: list):

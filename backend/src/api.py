@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pygelbooru import Gelbooru
-from src.tagger import Tagger, load_dataset_tags
+from src.tagger import Tagger, load_dataset_tags, scan_duplicates
 import base64
 from PIL import Image
 
@@ -31,6 +31,7 @@ async def home():
 @app.get("/load_dataset")
 async def load_dataset(path: str):
     tagger.load_dataset(path)
+    scan_duplicates(tagger.dataset)
     available_tags = load_dataset_tags(tagger.dataset)
     return {'index': tagger.index, 'path': tagger.path, 'num_files': tagger.num_files, 'available_tags': available_tags}
 
