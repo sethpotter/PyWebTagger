@@ -3,7 +3,7 @@ uvicorn[standard]
 pygelbooru
 Pillow
 imagehash
---index-url https://download.pytorch.org/whl/cu118
+--extra-index-url https://download.pytorch.org/whl/cu118
 torch
 torchvision
 transformers
