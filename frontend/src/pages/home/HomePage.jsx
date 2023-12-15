@@ -25,7 +25,7 @@ import {
     Image,
     Switch,
     NumberInput,
-    NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper
+    NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Checkbox
 } from '@chakra-ui/react'
 import {VFlex, HFlex, BVFlex, BHFlex} from "../../components/WrappedChakra"
 import {load_dataset, load_image, save_caption} from "../../api/DatasetRoutes";
@@ -62,6 +62,8 @@ export const HomePage = (props) => {
     const [tagMode, setTagMode] = useState(false);
     const [autoSave, setAutoSave] = useState(false);
     const [tagsToDisplay, setTagsToDisplay] = useState(100);
+    const [showTagCounts, setShowTagCounts] = useState(false);
+    const [sortMode, setSortMode] = useState(0);
 
 
     const displayResizeButton = () => {
@@ -171,40 +173,63 @@ export const HomePage = (props) => {
                                 }
                             </BVFlex>
                             {
-                                (tagMode) ?
-                                    <TagSearch enabledTags={datasetImage.caption.split(',').map(val => val.trim())}
-                                               tags={Object.keys(dataset.available_tags)}
+                                (() => {
+                                    if(tagMode) {
+                                        let activeTags = datasetImage.caption.split(',').map(val => val.trim())
+                                        return (
+                                            <TagSearch enabledTags={activeTags}
+                                               tags={dataset.available_tags}
                                                onChange={(tags) => handleCaptionUpdate(tags.join(', '))}
-                                               tagsPerPage={tagsToDisplay} />
-                                    :
-                                    <></>
+                                               tagsPerPage={tagsToDisplay}
+                                               showTagCounts={showTagCounts}
+                                               sortMode={sortMode} />
+                                        )
+                                    } else {
+                                        return <></>
+                                    }
+                                })()
                             }
                             <BVFlex flexGrow={0} bg='white'>
                                 <Text color='black' ml={2}>Settings</Text>
                                 <HStack>
                                     <HStack>
-                                        <Text color='black' mb='1px' ml='10px' fontSize='sm' title='Activates tag mode which makes it easier to caption images with buttons'>Tag Mode</Text>
+                                        <Text color='black' mb='1px' fontSize='sm' title='Activates tag mode which makes it easier to caption images with buttons'>Tag Mode</Text>
                                         <Switch onChange={(e) => setTagMode(e.currentTarget.checked)}/>
                                     </HStack>
                                     <HStack>
-                                        <Text color='black' mb='1px' ml='10px' fontSize='sm' title='Save the caption when the display changes'>Auto Save</Text>
+                                        <Text color='black' mb='1px' fontSize='sm' title='Save the caption when the image changes'>Auto Save</Text>
                                         <Switch onChange={(e) => setAutoSave(e.currentTarget.checked)}/>
                                     </HStack>
                                     {
                                         (tagMode) ?
-                                            <HStack>
-                                                <Text color='black' mb='1px' ml='10px' fontSize='sm' title=''>Tags Per Page</Text>
-                                                <NumberInput color='black' maxW='60px' size='xs' min={1} max={999} value={tagsToDisplay} onChange={(val) => setTagsToDisplay(val)} allowMouseWheel>
-                                                    <NumberInputField/>
-                                                    <NumberInputStepper>
-                                                        <NumberIncrementStepper/>
-                                                        <NumberDecrementStepper/>
-                                                    </NumberInputStepper>
-                                                </NumberInput>
-                                            </HStack>
+                                            <>
+                                                <HStack>
+                                                    <Text color='black' mb='1px' fontSize='sm' title='Show the number of occurances beside the tag'>Tag Counts</Text>
+                                                    <Switch onChange={(e) => setShowTagCounts(e.currentTarget.checked)}/>
+                                                </HStack>
+                                                <HStack gap={0}>
+                                                    <Text color='black' mb='1px' fontSize='sm' w='140px' title='The sorting mode of tags on the tag editor'>Sorting Mode</Text>
+                                                    <Select color='black' size='xs'>
+                                                        <option value='0'>Alphanumeric</option>
+                                                        <option value='1'>Tag count</option>
+                                                    </Select>
+                                                </HStack>
+                                                <HStack>
+                                                    <Text color='black' mb='1px' fontSize='sm' title='The amount of tags to display per page'>Tags Per Page</Text>
+                                                    <NumberInput color='black' maxW='65px' size='xs' min={1} max={999} value={tagsToDisplay} onChange={(val) => setTagsToDisplay(val)} allowMouseWheel>
+                                                        <NumberInputField/>
+                                                        <NumberInputStepper>
+                                                            <NumberIncrementStepper/>
+                                                            <NumberDecrementStepper/>
+                                                        </NumberInputStepper>
+                                                    </NumberInput>
+                                                </HStack>
+                                            </>
                                             :
                                             <></>
                                     }
+
+
                                 </HStack>
 
                             </BVFlex>

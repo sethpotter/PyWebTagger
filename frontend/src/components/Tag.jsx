@@ -5,7 +5,7 @@ import {Box, Text} from "@chakra-ui/react";
 export const Tag = (props) => {
     const [on, setOn] = useState(false);
 
-    const {name, value, onToggle, disabled} = props;
+    const {name, toggled, onToggle, disabled} = props;
 
     const handleToggle = () => {
         if(disabled) {
@@ -18,8 +18,8 @@ export const Tag = (props) => {
     }
 
     useEffect(() => {
-        setOn(value);
-    }, [value])
+        setOn(toggled);
+    }, [toggled])
 
     return (
         <>

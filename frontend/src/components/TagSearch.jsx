@@ -10,7 +10,7 @@ export const TagSearch = (props) => {
     const [activeTags, setActiveTags] = useState([]);
     const [page, setPage] = useState(0);
 
-    const {enabledTags, tags, tagsPerPage = 75, onChange, onReloadTags} = props;
+    const {enabledTags, tags, tagsPerPage = 75, onChange, onReloadTags, showTagCounts, sortMode} = props;
 
     const handleActiveTags = (active, val) => {
         const updatedTags = active
@@ -31,11 +31,31 @@ export const TagSearch = (props) => {
         if(value < 0)
             value = 0;
 
-        const pageLimit = Math.floor(tags.length / tagsPerPage);
+        const pageLimit = Math.floor(Object.keys(tags).filter((val) => val.includes(tagSearch)).length / tagsPerPage);
         if(value > pageLimit)
             value = pageLimit;
 
         setPage(value);
+    }
+
+    const handleSearch = (value) => {
+        setTagSearch(value);
+    }
+
+    useEffect(() => {
+        handlePage(page);
+    }, [tagSearch])
+
+    const modifyTags = () => {
+        const keyValue = Object.entries(tags);
+
+        if(sortMode === 0) {
+            keyValue.sort((a, b) => a[0].localeCompare(b[0]));
+        } else if(sortMode === 1) {
+            keyValue.sort((a, b) => b[1] - a[1]);
+        }
+
+        return keyValue.map(([key, value]) => key).filter((val) => val.includes(tagSearch));
     }
 
     return (
@@ -44,20 +64,20 @@ export const TagSearch = (props) => {
                 <Text color='black' mb='0px' ml='10px' fontSize='sm'>Available Tags</Text>
                 <Input w='25%' bg='white' color='black' placeholder='Search tags...' value={tagSearch}
                        onChange={(e) => {
-                           setTagSearch(e.target.value)
+                           handleSearch(e.target.value)
                        }}/>
                 <BVFlex bg='white'>
                     <HFlex flexWrap='wrap' gap={1}>
                         {
-                            tags.filter((val) => val.includes(tagSearch)).splice(page * tagsPerPage, tagsPerPage).sort().map((val) =>
-                                <Tag name={val} value={activeTags.includes(val)} onToggle={(active) => handleActiveTags(active, val)}/>
+                            modifyTags().splice(page * tagsPerPage, tagsPerPage).map((val) =>
+                                <Tag name={(showTagCounts) ? tags[val] + ' ' + val : val} value={val} toggled={activeTags.includes(val)} onToggle={(active) => handleActiveTags(active, val)}/>
                             )
                         }
                     </HFlex>
                     <Divider/>
                     <HFlex alignItems='center'>
                         <Button colorScheme='blue' onClick={() => handlePage(page-1)}>Previous</Button>
-                        <Text mb={0} p={2} color='black'>{page+1}/{Math.floor(tags.length / tagsPerPage)+1}</Text>
+                        <Text mb={0} p={2} color='black'>{page+1}/{Math.floor(modifyTags().length / tagsPerPage)+1}</Text>
                         <Button colorScheme='blue' onClick={() => handlePage(page+1)}>Next</Button>
                     </HFlex>
                 </BVFlex>
