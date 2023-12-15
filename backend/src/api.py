@@ -31,9 +31,13 @@ async def home():
 @app.get("/load_dataset")
 async def load_dataset(path: str):
     tagger.load_dataset(path)
-    scan_duplicates(tagger.dataset)
     available_tags = load_dataset_tags(tagger.dataset)
     return {'index': tagger.index, 'path': tagger.path, 'num_files': tagger.num_files, 'available_tags': available_tags}
+
+
+@app.get("/get_duplicates")
+async def get_duplicates():
+    return scan_duplicates(tagger.dataset)
 
 
 @app.get("/load_image")

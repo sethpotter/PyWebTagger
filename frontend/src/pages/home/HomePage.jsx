@@ -39,6 +39,7 @@ export const HomePage = (props) => {
     const [datasetImage, setDatasetImage] = useState(new DatasetImage(0, {}, '', ''));
 
     const [tagMode, setTagMode] = useState(false);
+    const [autoSave, setAutoSave] = useState(false);
 
 
     const displayResizeButton = () => {
@@ -77,8 +78,10 @@ export const HomePage = (props) => {
             index = 1;
         }
 
-        console.log(dataset);
-        console.log(index-1);
+        if(autoSave) {
+            handleCaptionSave(dataset.index, datasetImage.caption);
+        }
+
         setDataset(new Dataset(index-1, dataset.path, dataset.num_files, dataset.available_tags));
 
         load_image(index-1).then((datasetImage) => {
@@ -88,8 +91,7 @@ export const HomePage = (props) => {
 
     const handleSetDataset = () => {
         load_dataset(datasetPath).then((data) => {
-            console.log(data);
-            console.log("SET DATA");
+            console.log("Loaded new dataset with " + dataset.num_files + " files");
             setDataset(data);
 
             load_image(0).then((datasetImage) => {
@@ -103,9 +105,9 @@ export const HomePage = (props) => {
         setDatasetImage(new DatasetImage(datasetImage.image, datasetImage.size, datasetImage.path, caption));
     }
 
-    const handleCaptionSave = () => {
-        save_caption(dataset.index, datasetImage.caption).then(() => {
-            console.log("Done");
+    const handleCaptionSave = (index, caption) => {
+        save_caption(index, caption).then(() => {
+            console.log("Saved " + index + " with caption " + caption);
         });
     }
 
@@ -136,10 +138,6 @@ export const HomePage = (props) => {
                             <BVFlex flexGrow={0} bg='white'>
                                 <HFlex justifyContent='space-between' mb={1}>
                                     <Text color='black' mb='1px' ml='10px' fontSize='sm'>{(tagMode) ? 'Tags' : 'Caption'}</Text>
-                                    <HStack>
-                                        <Text color='black' mb='1px' ml='10px' fontSize='sm'>Tag Mode</Text>
-                                        <Switch onChange={(e) => setTagMode(e.currentTarget.checked)}/>
-                                    </HStack>
                                 </HFlex>
                                 {
                                     (tagMode) ?
@@ -158,6 +156,20 @@ export const HomePage = (props) => {
                                     :
                                     <></>
                             }
+                            <BVFlex flexGrow={0} bg='white'>
+                                <Text color='black' ml={2}>Settings</Text>
+                                <HStack>
+                                    <HStack>
+                                        <Text color='black' mb='1px' ml='10px' fontSize='sm' title='Activates tag mode which makes it easier to caption images with buttons'>Tag Mode</Text>
+                                        <Switch onChange={(e) => setTagMode(e.currentTarget.checked)}/>
+                                    </HStack>
+                                    <HStack>
+                                        <Text color='black' mb='1px' ml='10px' fontSize='sm' title='Save the caption when the display changes'>Auto Save</Text>
+                                        <Switch onChange={(e) => setAutoSave(e.currentTarget.checked)}/>
+                                    </HStack>
+                                </HStack>
+
+                            </BVFlex>
                         </VFlex>
                         <VFlex w='50%' gap={3}>
                             <BVFlex id='display' position='relative' alignItems='center' justifyContent='center' p={4} height='1000px' minHeight='1000px'>
@@ -196,7 +208,7 @@ export const HomePage = (props) => {
                                 <Button colorScheme='blue' h onClick={() => handleIndexChange(dataset.index + 1 - 1)}>Previous</Button>
                                 <Button colorScheme='blue' h onClick={() => handleIndexChange(dataset.index + 1 + 1)}>Next</Button>
                             </HFlex>
-                            <Button colorScheme='blue' h onClick={() => handleCaptionSave()}>Save Caption</Button>
+                            <Button colorScheme='blue' h onClick={() => handleCaptionSave(dataset.index, datasetImage.caption)}>Save Caption</Button>
                         </VFlex>
                     </HFlex>
                 </VFlex>

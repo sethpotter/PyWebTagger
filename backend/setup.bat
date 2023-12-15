@@ -17,4 +17,3 @@ call ./venv/Scripts/activate.bat
 
 echo Installing requirements...
 pip install --disable-pip-version-check -r requirements.txt
-pause

@@ -8,6 +8,7 @@ import imagehash
 from multiprocessing import Pool
 import tqdm
 
+
 class DatasetImage:
     def __init__(self, path: str):
         self.path = path
@@ -100,11 +101,12 @@ def load_dataset(path: str):
         dataset.append(DatasetImage(f))
     return dataset
 
+
 def make_hash(datasetImage):
     try:
         with Image.open(datasetImage.path) as img:
             img_hash = imagehash.dhash(img, hash_size=8)
-            return (img_hash, datasetImage.path)
+            return img_hash, datasetImage.path
     except Exception as e:
         traceback.print_exc()
         return None
@@ -128,9 +130,9 @@ def scan_duplicates(dataset: list[DatasetImage]):
         else:
             hash_dict[img_hash] = [path]
 
-    for images in hash_dict.values():
-        if len(images) > 1:
-            print(images)
+    dupes = [arr for arr in hash_dict.values() if len(arr) > 1]
+    print(dupes)
+    return dupes
 
 
 def load_dataset_tags(dataset: list):
