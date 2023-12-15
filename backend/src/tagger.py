@@ -1,16 +1,12 @@
+import multiprocessing
 import os
 import re
 import traceback
 
 from PIL import Image
 import imagehash
-from sentence_transformers import SentenceTransformer, util
-import torch
-from concurrent.futures import ProcessPoolExecutor, as_completed
-from multiprocessing import Manager, Pool
-from imagededup.methods import PHash
-from imagededup.methods import AHash
-from imagededup.methods import DHash
+from multiprocessing import Pool
+import tqdm
 
 class DatasetImage:
     def __init__(self, path: str):
@@ -107,7 +103,7 @@ def load_dataset(path: str):
 def make_hash(datasetImage):
     try:
         with Image.open(datasetImage.path) as img:
-            img_hash = imagehash.average_hash(img, hash_size=16)
+            img_hash = imagehash.dhash(img, hash_size=8)
             return (img_hash, datasetImage.path)
     except Exception as e:
         traceback.print_exc()
@@ -115,12 +111,15 @@ def make_hash(datasetImage):
 
 
 def scan_duplicates(dataset: list[DatasetImage]):
-    with Pool(processes=8) as p:
-        results = p.map(make_hash, [datasetImage for datasetImage in dataset], chunksize=1)
+    print("Scanning for duplicates...")
+    num_workers = multiprocessing.cpu_count()
+    with Pool(processes=num_workers) as p:
+        tasks = [datasetImage for datasetImage in dataset]
+        results = []
+        for r in tqdm.tqdm(p.imap(make_hash, tasks), total=len(tasks)):
+            results.append(r)
 
     hash_dict = {}
-
-    print("Hashing complete")
 
     for t in results:
         img_hash, path = t
