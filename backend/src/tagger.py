@@ -106,27 +106,32 @@ def load_dataset(path: str):
 
 def make_hash(datasetImage):
     try:
-        img_hash = DHash().encode_image(image_file=datasetImage.path)
-        return (img_hash, os.path.basename(datasetImage.path))
+        with Image.open(datasetImage.path) as img:
+            img_hash = imagehash.average_hash(img, hash_size=16)
+            return (img_hash, datasetImage.path)
     except Exception as e:
         traceback.print_exc()
         return None
 
 
-def scan_duplicates(dataset: [DatasetImage]):
+def scan_duplicates(dataset: list[DatasetImage]):
     with Pool(processes=8) as p:
-        results = p.map(make_hash, [datasetImage for datasetImage in dataset], chunksize=8)
+        results = p.map(make_hash, [datasetImage for datasetImage in dataset], chunksize=1)
 
-    print(results)
+    hash_dict = {}
 
-    encodings = {}
+    print("Hashing complete")
 
     for t in results:
-        img_hash, filename = t
-        encodings[filename] = img_hash
+        img_hash, path = t
+        if img_hash in hash_dict:
+            hash_dict[img_hash].append(path)
+        else:
+            hash_dict[img_hash] = [path]
 
-    duplicates = DHash().find_duplicates(encoding_map=encodings, scores=True)
-    print(duplicates)
+    for images in hash_dict.values():
+        if len(images) > 1:
+            print(images)
 
 
 def load_dataset_tags(dataset: list):

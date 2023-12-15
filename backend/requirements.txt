@@ -7,5 +7,3 @@ imagehash
 torch
 torchvision
 transformers
-sentence-transformers # Duplicate images detection
-imagededup
