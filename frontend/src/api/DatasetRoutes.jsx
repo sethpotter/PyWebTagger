@@ -44,8 +44,24 @@ const save_caption = (index, caption) => {
     });
 }
 
+const deepdanbooru = (path, threshold) => {
+    const request = {
+        path: path,
+        threshold: threshold
+    };
+
+    return axios.get(toRouteUrl('deepdanbooru', request)).then(res => {
+        console.log(res);
+        return res.data;
+    }).catch(err => {
+        console.log(err.response);
+        return undefined;
+    });
+}
+
 export {
     load_dataset,
     load_image,
-    save_caption
+    save_caption,
+    deepdanbooru
 }

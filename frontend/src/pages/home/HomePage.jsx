@@ -28,7 +28,7 @@ import {
     NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Checkbox
 } from '@chakra-ui/react'
 import {VFlex, HFlex, BVFlex, BHFlex} from "../../components/WrappedChakra"
-import {load_dataset, load_image, save_caption} from "../../api/DatasetRoutes";
+import {load_dataset, load_image, save_caption, deepdanbooru} from "../../api/DatasetRoutes";
 
 // Unfortunately Chakra does not support adding default props from a theme.
 // So this workaround will have to do for now.
@@ -63,7 +63,13 @@ export const HomePage = (props) => {
     const [autoSave, setAutoSave] = useState(false);
     const [tagsToDisplay, setTagsToDisplay] = useState(100);
     const [showTagCounts, setShowTagCounts] = useState(false);
-    const [sortMode, setSortMode] = useState(0);
+    const [sortMode, setSortMode] = useState('0');
+
+    const [threshold, setThreshold] = useState(0.8);
+    const [append, setAppend] = useState('0');
+
+
+    const [busy, setBusy] = useState(false);
 
 
     const displayResizeButton = () => {
@@ -135,6 +141,21 @@ export const HomePage = (props) => {
         });
     }
 
+    const handleInterrogate = () => {
+        setBusy(true);
+        deepdanbooru(datasetImage.path, threshold).then((tags_data) => {
+            const interrogate = Object.entries(tags_data).map(([key, value]) => key).join(', ');
+            if(append === '0') { // Replace
+                handleCaptionUpdate(interrogate);
+            } else if(append === '1') { // Before
+                handleCaptionUpdate(interrogate + ', ' + datasetImage.caption);
+            } else if(append === '2') { // After
+                handleCaptionUpdate(datasetImage.caption + ', ' + interrogate);
+            }
+            setBusy(false);
+        });
+    }
+
 
     useEffect(() => {
         displayResizeButton();
@@ -169,7 +190,7 @@ export const HomePage = (props) => {
                                             {datasetImage.caption.split(',').map((val) => <Tag name={val} disabled/>)}
                                         </HFlex>
                                         :
-                                        <Textarea bg='white' color='black' fontSize='sm' placeholder='No caption found...' value={datasetImage.caption} onChange={(e) => handleCaptionUpdate(e.target.value)} />
+                                        <Textarea bg='white' color='black' fontSize='sm' placeholder='No caption found...' value={datasetImage.caption} onChange={(e) => handleCaptionUpdate(e.target.value)} disabled={(busy) ? true : ''} />
                                 }
                             </BVFlex>
                             {
@@ -189,6 +210,31 @@ export const HomePage = (props) => {
                                     }
                                 })()
                             }
+                            <BVFlex flexGrow={0} bg='white'>
+                                <Text color='black' ml={2} mb={0}>Interrogate</Text>
+                                <HFlex gap={5} p={2}>
+                                    <VFlex gap={2}>
+                                        <BVFlex p={3}>
+                                            <Text color='black' mb={2} fontSize='sm'>Threshold: {threshold}</Text>
+                                            <Slider flexGrow={1} onChange={(val) => setThreshold(val)} value={threshold} min={0} step={0.01} max={1}>
+                                                <SliderTrack>
+                                                <SliderFilledTrack />
+                                                </SliderTrack>
+                                                <SliderThumb />
+                                            </Slider>
+                                        </BVFlex>
+                                        <BVFlex p={3}>
+                                            <Text color='black' mb={2} fontSize='sm'>Append Options</Text>
+                                            <RadioGroup display='flex' gap={3} color='black' size='sm' value={append} onChange={setAppend}>
+                                                <Radio value='0'>Replace</Radio>
+                                                <Radio value='1'>Before</Radio>
+                                                <Radio value='2'>After</Radio>
+                                            </RadioGroup>
+                                        </BVFlex>
+                                    </VFlex>
+                                    <Button colorScheme='blue' h='100%' onClick={handleInterrogate} isLoading={busy}>Interrogate</Button>
+                                </HFlex>
+                            </BVFlex>
                             <BVFlex flexGrow={0} bg='white'>
                                 <Text color='black' ml={2} mb={0}>Settings</Text>
                                 <VFlex p={2}>

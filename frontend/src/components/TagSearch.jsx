@@ -44,7 +44,7 @@ export const TagSearch = (props) => {
 
     useEffect(() => {
         handlePage(page);
-    }, [tagSearch])
+    }, [tagSearch, tagsPerPage])
 
     const modifyTags = () => {
         const keyValue = Object.entries(tags);
