@@ -210,7 +210,7 @@ export const HomePage = (props) => {
                                                     </HStack>
                                                     <HStack gap={0}>
                                                         <Text color='black' mb='1px' fontSize='sm' w='140px' title='The sorting mode of tags on the tag editor'>Sorting Mode</Text>
-                                                        <Select color='black' size='xs'>
+                                                        <Select color='black' size='xs' onChange={(e) => setSortMode(e.target.value)} value={sortMode}>
                                                             <option value='0'>Alphanumeric</option>
                                                             <option value='1'>Tag count</option>
                                                         </Select>

@@ -49,9 +49,9 @@ export const TagSearch = (props) => {
     const modifyTags = () => {
         const keyValue = Object.entries(tags);
 
-        if(sortMode === 0) {
+        if(sortMode === '0') {
             keyValue.sort((a, b) => a[0].localeCompare(b[0]));
-        } else if(sortMode === 1) {
+        } else if(sortMode === '1') {
             keyValue.sort((a, b) => b[1] - a[1]);
         }
 
