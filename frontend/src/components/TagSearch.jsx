@@ -55,7 +55,13 @@ export const TagSearch = (props) => {
             keyValue.sort((a, b) => b[1] - a[1]);
         }
 
-        return keyValue.map(([key, value]) => key).filter((val) => val.includes(tagSearch));
+        const databaseKeys = keyValue.map(([key, value]) => key);
+        const enabledWithoutDatabaseTags = enabledTags.filter(t => databaseKeys.includes(t))
+        const databaseWithoutEnabledTags = databaseKeys.filter(t => !enabledTags.includes(t))
+
+        const tagsAtFront = enabledWithoutDatabaseTags.concat(databaseWithoutEnabledTags);
+
+        return tagsAtFront.filter((val) => val.includes(tagSearch));
     }
 
     return (

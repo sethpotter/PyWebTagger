@@ -187,7 +187,7 @@ export const HomePage = (props) => {
                                 {
                                     (tagMode) ?
                                         <HFlex flexWrap='wrap' gap={1}>
-                                            {datasetImage.caption.split(',').map((val) => <Tag name={val} cursor='pointer' disabled/>)}
+                                            {datasetImage.caption.split(',').map((val) => <Tag bg={(!(val.trim() in dataset.available_tags)) ? 'green.200' : 'white'} name={val.trim()} disabled/>)}
                                         </HFlex>
                                         :
                                         <Textarea bg='white' color='black' fontSize='sm' placeholder='No caption found...' value={datasetImage.caption} onChange={(e) => handleCaptionUpdate(e.target.value)} disabled={(busy) ? true : ''} />
