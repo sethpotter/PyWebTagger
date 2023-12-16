@@ -39,3 +39,4 @@ These are some of the long term goals I wish to achieve while working on this pr
 * Cropping - Able to crop images whether this is on another page or using the display.
 * Auto-Cropping - Set and go cropping with face detection if possible.
 * Bulk Tag Editor - Edit sets of tags at a time.
+* Gallery View - View multiple images
