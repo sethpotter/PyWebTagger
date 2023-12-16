@@ -12,11 +12,13 @@ export const Tag = (props) => {
             return;
         }
 
+        setOn(!on);
+
         if(onToggle)
             onToggle(!on)
-        setOn(!on);
     }
 
+    // Run once
     useEffect(() => {
         setOn(toggled);
     }, [toggled])

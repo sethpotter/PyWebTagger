@@ -19,8 +19,7 @@ export const TagSearch = (props) => {
 
         setActiveTags(updatedTags);
 
-        if(onChange)
-            onChange(updatedTags);
+        onChange(updatedTags);
     }
 
     useEffect(() => {
@@ -56,8 +55,8 @@ export const TagSearch = (props) => {
         }
 
         const databaseKeys = keyValue.map(([key, value]) => key);
-        const enabledWithoutDatabaseTags = enabledTags.filter(t => databaseKeys.includes(t))
-        const databaseWithoutEnabledTags = databaseKeys.filter(t => !enabledTags.includes(t))
+        const enabledWithoutDatabaseTags = enabledTags.filter(t => databaseKeys.some(v => v === t));
+        const databaseWithoutEnabledTags = databaseKeys.filter(t => !enabledTags.some(v => v === t));
 
         const tagsAtFront = enabledWithoutDatabaseTags.concat(databaseWithoutEnabledTags);
 
@@ -75,8 +74,8 @@ export const TagSearch = (props) => {
                 <BVFlex bg='white'>
                     <HFlex flexWrap='wrap' gap={1}>
                         {
-                            modifyTags().splice(page * tagsPerPage, tagsPerPage).map((val) =>
-                                <Tag name={(showTagCounts) ? tags[val] + ' ' + val : val} value={val} toggled={activeTags.includes(val)} onToggle={(active) => handleActiveTags(active, val)}/>
+                            modifyTags().splice(page * tagsPerPage, tagsPerPage).map((val, i) =>
+                                <Tag key={'dataset-' + val} name={(showTagCounts) ? tags[val] + ' ' + val : val} value={val} toggled={activeTags.some(v => v === val)} onToggle={(active) => handleActiveTags(active, val)}/>
                             )
                         }
                     </HFlex>

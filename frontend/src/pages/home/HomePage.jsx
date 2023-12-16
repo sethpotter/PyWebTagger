@@ -115,6 +115,7 @@ export const HomePage = (props) => {
         setDataset(new Dataset(index-1, dataset.path, dataset.num_files, dataset.available_tags));
 
         load_image(index-1).then((datasetImage) => {
+            datasetImage.original_caption = datasetImage.caption;
             setDatasetImage(datasetImage);
         });
     }
@@ -125,18 +126,51 @@ export const HomePage = (props) => {
             setDataset(data);
 
             load_image(0).then((datasetImage) => {
+                datasetImage.original_caption = datasetImage.caption;
                 setDatasetImage(datasetImage);
             });
         });
     }
 
     const handleCaptionUpdate = (caption) => {
-        console.log(caption);
-        setDatasetImage(new DatasetImage(datasetImage.image, datasetImage.size, datasetImage.path, caption));
+        const newDatasetImage = new DatasetImage(datasetImage.image, datasetImage.size, datasetImage.path, caption);
+        newDatasetImage.original_caption = datasetImage.original_caption;
+        setDatasetImage(newDatasetImage);
     }
 
     const handleCaptionSave = (index, caption) => {
+        const tags = caption.split(',').map(v => v.trim());
+        const originalTags = datasetImage.original_caption.split(',').map(v => v.trim());
+        const removedTags = originalTags.filter(t => !tags.some(v => v === t));
+
+        for(const t of tags) {
+            if(!(t in dataset.available_tags)) {
+                dataset.available_tags[t] = 1;
+                console.log("New Tag: " + t);
+            } else {
+                if(!originalTags.includes(t)) {
+                    dataset.available_tags[t] = Number(dataset.available_tags[t]) + 1;
+                    console.log(t + " +1 -> " + dataset.available_tags[t]);
+                }
+            }
+        }
+
+        for(const t of removedTags) {
+            const count = dataset.available_tags[t];
+            if(count > 1) {
+                dataset.available_tags[t] -= 1;
+                console.log(t + " -1 -> " + dataset.available_tags[t]);
+            } else {
+                delete dataset.available_tags[t];
+                console.log("Deleted Tag: " + t);
+            }
+        }
+
+
         save_caption(index, caption).then(() => {
+            const newDatasetImage = new DatasetImage(datasetImage.image, datasetImage.size, datasetImage.path, caption);
+            newDatasetImage.original_caption = caption;
+            setDatasetImage(newDatasetImage);
             console.log("Saved " + index + " with caption " + caption);
         });
     }
@@ -187,7 +221,28 @@ export const HomePage = (props) => {
                                 {
                                     (tagMode) ?
                                         <HFlex flexWrap='wrap' gap={1}>
-                                            {datasetImage.caption.split(',').map((val) => <Tag bg={(!(val.trim() in dataset.available_tags)) ? 'green.200' : 'white'} name={val.trim()} disabled/>)}
+                                            {
+                                                (() => {
+                                                    const tags = datasetImage.caption.split(',').map(val => val.trim());
+                                                    const dupes = tags.filter((t, i) => tags.indexOf(t) !== i);
+
+                                                    const tagBackground = (tag) => {
+                                                        if(dupes.some(v => v === tag)) {
+                                                            return 'red.200';
+                                                        }
+                                                        if(!(tag in dataset.available_tags)) {
+                                                            return 'green.200';
+                                                        }
+                                                        return 'white';
+                                                    };
+
+                                                    const onClick = (index) => {
+                                                        handleCaptionUpdate(tags.filter((v, i) => i !== index).join(', '));
+                                                    }
+
+                                                    return tags.map((val, index) => <Tag key={'image-' + val} cursor='pointer' bg={tagBackground(val)} name={val} onClick={() => onClick(index)} disabled/>);
+                                                })()
+                                            }
                                         </HFlex>
                                         :
                                         <Textarea bg='white' color='black' fontSize='sm' placeholder='No caption found...' value={datasetImage.caption} onChange={(e) => handleCaptionUpdate(e.target.value)} disabled={(busy) ? true : ''} />
@@ -196,7 +251,7 @@ export const HomePage = (props) => {
                             {
                                 (() => {
                                     if(tagMode) {
-                                        let activeTags = datasetImage.caption.split(',').map(val => val.trim())
+                                        let activeTags = datasetImage.caption.split(',').map(val => val.trim());
                                         return (
                                             <TagSearch enabledTags={activeTags}
                                                tags={dataset.available_tags}
