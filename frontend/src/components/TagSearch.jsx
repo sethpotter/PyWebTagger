@@ -66,8 +66,8 @@ export const TagSearch = (props) => {
 
     return (
         <>
-            <BVFlex flexGrow={0} gap={3}>
-                <Text color='black' mb='0px' ml='10px' fontSize='sm'>Available Tags</Text>
+            <BVFlex flexGrow={0} gap={2}>
+                <Text color='black' mb='0px' ml='2px' fontSize='sm'>Available Tags</Text>
                 <Input w='25%' bg='white' color='black' placeholder='Search tags...' value={tagSearch}
                        onChange={(e) => {
                            handleSearch(e.target.value)

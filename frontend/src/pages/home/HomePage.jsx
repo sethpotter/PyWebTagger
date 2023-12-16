@@ -182,7 +182,7 @@ export const HomePage = (props) => {
                         <VFlex w='50%' bg='gray.100' p={2} borderRadius={5} gap={5}>
                             <BVFlex flexGrow={0} bg='white'>
                                 <HFlex justifyContent='space-between' mb={1}>
-                                    <Text color='black' mb='1px' ml='10px' fontSize='sm'>{(tagMode) ? 'Tags' : 'Caption'}</Text>
+                                    <Text color='black' mb='2px' ml='2px' fontSize='sm'>{(tagMode) ? 'Tags' : 'Caption'}</Text>
                                 </HFlex>
                                 {
                                     (tagMode) ?
