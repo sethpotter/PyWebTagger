@@ -177,7 +177,7 @@ export const HomePage = (props) => {
     }
 
     const handleCaptionSave = (index, caption, callback = undefined) => {
-        const tags = caption.split(',').map(v => v.trim());
+        const tags = handleTagOptions(caption.split(',').map(v => v.trim()));
         const originalTags = datasetImage.original_caption.split(',').map(v => v.trim());
         const removedTags = originalTags.filter(t => !tags.some(v => v === t));
 
