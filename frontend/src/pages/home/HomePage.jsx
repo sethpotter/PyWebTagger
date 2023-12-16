@@ -107,8 +107,8 @@ export const HomePage = (props) => {
             return;
         }
 
-        if(index > dataset.num_files) {
-            index = dataset.num_files;
+        if(index > dataset.num_files - 1) {
+            index = dataset.num_files - 1;
         }
         if(index < 0) {
             index = 0;
@@ -178,6 +178,7 @@ export const HomePage = (props) => {
 
     const handleCaptionSave = (index, caption, callback = undefined) => {
         const tags = handleTagOptions(caption.split(',').map(v => v.trim()));
+        const tagsJoined = tags.join(', ');
         const originalTags = datasetImage.original_caption.split(',').map(v => v.trim());
         const removedTags = originalTags.filter(t => !tags.some(v => v === t));
 
@@ -204,12 +205,11 @@ export const HomePage = (props) => {
             }
         }
 
-
-        save_caption(index, caption).then(() => {
-            const newDatasetImage = new DatasetImage(datasetImage.image, datasetImage.size, datasetImage.path, caption);
-            newDatasetImage.original_caption = caption;
+        save_caption(index, tagsJoined).then(() => {
+            const newDatasetImage = new DatasetImage(datasetImage.image, datasetImage.size, datasetImage.path, tagsJoined);
+            newDatasetImage.original_caption = tagsJoined;
             setDatasetImage(newDatasetImage);
-            console.log("Saved " + index + " with caption " + caption);
+            console.log("Saved " + index + " with caption " + tagsJoined);
             if(callback !== undefined)
                 callback();
         });
