@@ -110,8 +110,8 @@ export const HomePage = (props) => {
         if(index > dataset.num_files) {
             index = dataset.num_files;
         }
-        if(index < 1) {
-            index = 1;
+        if(index < 0) {
+            index = 0;
         }
 
         if(autoSave) {
@@ -120,9 +120,9 @@ export const HomePage = (props) => {
                 handleCaptionSave(dataset.index, datasetImage.caption);
         }
 
-        setDataset(new Dataset(index-1, dataset.path, dataset.num_files, dataset.available_tags));
+        setDataset(new Dataset(index, dataset.path, dataset.num_files, dataset.available_tags));
 
-        loadDatasetImage(index - 1);
+        loadDatasetImage(index);
     }
 
     const handleSetDataset = () => {
@@ -250,10 +250,10 @@ export const HomePage = (props) => {
         const handleKeyPress = (event) => {
             const key = event.keyCode;
             if(key === 37) {
-                handleIndexChange(dataset.index + 1 - 1);
+                handleIndexChange(dataset.index - 1);
             }
             if(key === 39) {
-                handleIndexChange(dataset.index + 1 + 1);
+                handleIndexChange(dataset.index + 1);
             }
         }
 
@@ -262,7 +262,7 @@ export const HomePage = (props) => {
         return function cleanup() {
             document.removeEventListener('keydown', handleKeyPress);
         }
-    }, []);
+    }, [dataset]);
 
     useEffect(() => {
         localStorage.setItem('datasetPath', datasetPath);
@@ -465,7 +465,7 @@ export const HomePage = (props) => {
                                         </HFlex>
                                     </Box>
                                     <HFlex>
-                                        <Slider flexGrow={1} w='50%' onChange={(val) => handleIndexChange(val)} value={dataset.index+1} defaultValue={1} min={1} max={dataset.num_files}>
+                                        <Slider flexGrow={1} w='50%' onChange={(val) => handleIndexChange(val - 1)} value={dataset.index + 1} defaultValue={1} min={1} max={(dataset) ? dataset.num_files : 2}>
                                             <SliderTrack>
                                             <SliderFilledTrack />
                                             </SliderTrack>
@@ -475,8 +475,8 @@ export const HomePage = (props) => {
                                 </BVFlex>
                             </HFlex>
                             <HFlex gap={3}>
-                                <Button colorScheme='blue' h onClick={() => handleIndexChange(dataset.index + 1 - 1)}>Previous</Button>
-                                <Button colorScheme='blue' h onClick={() => handleIndexChange(dataset.index + 1 + 1)}>Next</Button>
+                                <Button colorScheme='blue' h onClick={() => handleIndexChange(dataset.index - 1)}>Previous</Button>
+                                <Button colorScheme='blue' h onClick={() => handleIndexChange(dataset.index + 1)}>Next</Button>
                             </HFlex>
                             <Button colorScheme='blue' h onClick={() => handleCaptionSave(dataset.index, datasetImage.caption)}>Save Caption</Button>
                         </VFlex>
