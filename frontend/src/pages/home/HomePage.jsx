@@ -156,15 +156,6 @@ export const HomePage = (props) => {
         });
     }
 
-    const handleOpenBooruPage = (e) => {
-        if(e.button === 1) {
-            const tag = e.target.innerText.replace(' ', '_');
-            console.log('Open booru page for ' + tag);
-            window.open('https://danbooru.donmai.us/wiki_pages/' + tag, '_blank').focus();
-        }
-        e.preventDefault();
-    }
-
 
     useEffect(() => {
         displayResizeButton();
@@ -196,7 +187,7 @@ export const HomePage = (props) => {
                                 {
                                     (tagMode) ?
                                         <HFlex flexWrap='wrap' gap={1}>
-                                            {datasetImage.caption.split(',').map((val) => <Tag name={val} cursor='pointer' onMouseDown={(e) => handleOpenBooruPage(e)} disabled/>)}
+                                            {datasetImage.caption.split(',').map((val) => <Tag name={val} cursor='pointer' disabled/>)}
                                         </HFlex>
                                         :
                                         <Textarea bg='white' color='black' fontSize='sm' placeholder='No caption found...' value={datasetImage.caption} onChange={(e) => handleCaptionUpdate(e.target.value)} disabled={(busy) ? true : ''} />
