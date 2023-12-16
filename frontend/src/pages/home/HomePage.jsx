@@ -66,10 +66,13 @@ export const HomePage = (props) => {
     const [sortMode, setSortMode] = useState('0');
     const [sortTags, setSortTags] = useState(false);
     const [formatTags, setFormatTags] = useState(false);
+    const [highlightDupes, setHighlightDupes] = useState(true);
+    const [highlightNew, setHighlightNew] = useState(true);
 
     const [recommend, setRecommend] = useState([]);
     const [threshold, setThreshold] = useState(0.8);
     const [append, setAppend] = useState('0');
+    const [showDupeRecommend, setShowDupeRecommend] = useState(true);
 
 
     const [busy, setBusy] = useState(false);
@@ -131,6 +134,9 @@ export const HomePage = (props) => {
     }
 
     const loadDatasetImage = (index) => {
+
+        setRecommend([]);
+
         load_image(index).then((datasetImage) => {
             datasetImage.original_caption = datasetImage.caption;
 
@@ -204,18 +210,36 @@ export const HomePage = (props) => {
     const handleInterrogate = () => {
         setBusy(true);
         deepdanbooru(datasetImage.path, threshold).then((tags_data) => {
-            const interrogate = Object.entries(tags_data).map(([key, value]) => key).join(', ');
+            let tags = Object.entries(tags_data).map(([key, value]) => key)
+            const tag_string = tags.join(', ');
             if(append === '0') {
-                setRecommend(interrogate);
+                setRecommend(tags);
             } else if(append === '1') { // Replace
-                handleCaptionUpdate(interrogate);
+                handleCaptionUpdate(tag_string);
             } else if(append === '2') { // Before
-                handleCaptionUpdate(interrogate + ', ' + datasetImage.caption);
+                handleCaptionUpdate(tag_string + ', ' + datasetImage.caption);
             } else if(append === '3') { // After
-                handleCaptionUpdate(datasetImage.caption + ', ' + interrogate);
+                handleCaptionUpdate(datasetImage.caption + ', ' + tag_string);
             }
             setBusy(false);
         });
+    }
+
+    const handleRecommendDupes = () => {
+        if(showDupeRecommend) {
+            return recommend
+        } else {
+            const imageTags = datasetImage.caption.split(',').map(val => val.trim());
+            return recommend.filter(t => !imageTags.some(v => v === t));
+        }
+    }
+
+    const handleRecommend = (tag) => {
+        let tags = datasetImage.caption.split(',').map(val => val.trim());
+        tags.push(tag);
+        tags = handleTagOptions(tags);
+        handleCaptionUpdate(tags.join(', '));
+        console.log("Add tag: " + tag);
     }
 
 
@@ -272,10 +296,10 @@ export const HomePage = (props) => {
                                                     const dupes = tags.filter((t, i) => tags.indexOf(t) !== i);
 
                                                     const tagBackground = (tag) => {
-                                                        if(dupes.some(v => v === tag)) {
+                                                        if(highlightDupes && dupes.some(v => v === tag)) {
                                                             return 'red.200';
                                                         }
-                                                        if(!(tag in dataset.available_tags)) {
+                                                        if(highlightNew && !(tag in dataset.available_tags)) {
                                                             return 'green.200';
                                                         }
                                                         return 'white';
@@ -294,21 +318,14 @@ export const HomePage = (props) => {
                                 }
                             </BVFlex>
                             {
-                                (!recommend) ?
+                                (recommend.length > 0) ?
                                     <BVFlex flexGrow={0} bg='white'>
                                         <HFlex justifyContent='space-between' mb={1}>
-                                            <Text color='black' mb='2px' ml='2px' fontSize='sm'>{(tagMode) ? 'Suggested Tags' : 'Caption'}</Text>
-                                            <Button flexGrow={0}>X</Button>
+                                            <Text color='black' mb='2px' ml='2px' fontSize='sm'>Suggested Tags</Text>
+                                            <Button variant='ghost' flexGrow={0} size='sm' minHeight='20px' height='20px' onClick={() => setRecommend([])}>X</Button>
                                         </HFlex>
-                                        <HFlex>
-                                            {
-                                                (tagMode) ?
-                                                    <HFlex flexWrap='wrap' gap={1}>
-                                                        {recommend.map((val, index) => <Tag key={'suggested-' + val} cursor='pointer' name={val} onClick='' disabled/>)}
-                                                    </HFlex>
-                                                    :
-                                                    <Text>{recommend}</Text>
-                                            }
+                                        <HFlex flexWrap='wrap' gap={1}>
+                                            {handleRecommendDupes().map((val, index) => <Tag key={'suggested-' + val} cursor='pointer' name={val} onClick={() => handleRecommend(val)} disabled/>)}
                                         </HFlex>
                                     </BVFlex>
                                     :
@@ -360,7 +377,7 @@ export const HomePage = (props) => {
                             <BVFlex flexGrow={0} bg='white'>
                                 <Text color='black' ml={2} mb={0}>Settings</Text>
                                 <VFlex p={2}>
-                                    <VFlex gap={1} w='25%'>
+                                    <VFlex gap={1} maxHeight='125px' w='70%' flexWrap='wrap'>
                                         <HStack>
                                             <Text color='black' mb='1px' fontSize='sm' title='Activates tag mode which makes it easier to caption images with buttons'>Tag Mode</Text>
                                             <Switch onChange={(e) => setTagMode(e.currentTarget.checked)}/>
@@ -368,6 +385,10 @@ export const HomePage = (props) => {
                                         <HStack>
                                             <Text color='black' mb='1px' fontSize='sm' title='Save the caption when the image changes'>Auto Save</Text>
                                             <Switch onChange={(e) => setAutoSave(e.currentTarget.checked)}/>
+                                        </HStack>
+                                        <HStack>
+                                            <Text color='black' mb='1px' fontSize='sm' title='Recommend captions that are already present'>Interrogate Duplicates</Text>
+                                            <Switch onChange={(e) => setShowDupeRecommend(e.currentTarget.checked)}/>
                                         </HStack>
                                         {
                                             (tagMode) ?
@@ -384,13 +405,21 @@ export const HomePage = (props) => {
                                                         <Text color='black' mb='1px' fontSize='sm' title='If the image tags should be sorted as well'>Sort Image Tags</Text>
                                                         <Switch onChange={(e) => setSortTags(e.currentTarget.checked)}/>
                                                     </HStack>
-                                                    <HStack gap={0}>
-                                                        <Text color='black' mb='1px' fontSize='sm' w='140px' title='Controls how the tags should be sorted'>Sorting Mode</Text>
-                                                        <Select color='black' size='xs' onChange={(e) => setSortMode(e.target.value)} value={sortMode}>
+                                                    <HStack>
+                                                        <Text color='black' mb='1px' fontSize='sm' title='Controls how the tags should be sorted'>Sorting Mode</Text>
+                                                        <Select w='40%' color='black' size='xs' onChange={(e) => setSortMode(e.target.value)} value={sortMode}>
                                                             <option value='0'>No Sorting</option>
                                                             <option value='1'>Alphanumeric</option>
                                                             <option value='2'>Tag count</option>
                                                         </Select>
+                                                    </HStack>
+                                                    <HStack>
+                                                        <Text color='black' mb='1px' fontSize='sm' title='Highlight duplicate tags'>Highlight Dupes</Text>
+                                                        <Switch onChange={(e) => setHighlightDupes(e.currentTarget.checked)}/>
+                                                    </HStack>
+                                                    <HStack>
+                                                        <Text color='black' mb='1px' fontSize='sm' title='Highlight tags that are new'>Highlight New Tags</Text>
+                                                        <Switch onChange={(e) => setHighlightNew(e.currentTarget.checked)}/>
                                                     </HStack>
                                                     <HStack>
                                                         <Text color='black' mb='1px' fontSize='sm' title='The amount of tags to display per page'>Tags Per Page</Text>
