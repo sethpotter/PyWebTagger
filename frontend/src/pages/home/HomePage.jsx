@@ -67,6 +67,7 @@ export const HomePage = (props) => {
     const [sortTags, setSortTags] = useState(false);
     const [formatTags, setFormatTags] = useState(false);
 
+    const [recommend, setRecommend] = useState([]);
     const [threshold, setThreshold] = useState(0.8);
     const [append, setAppend] = useState('0');
 
@@ -204,11 +205,13 @@ export const HomePage = (props) => {
         setBusy(true);
         deepdanbooru(datasetImage.path, threshold).then((tags_data) => {
             const interrogate = Object.entries(tags_data).map(([key, value]) => key).join(', ');
-            if(append === '0') { // Replace
+            if(append === '0') {
+                setRecommend(interrogate);
+            } else if(append === '1') { // Replace
                 handleCaptionUpdate(interrogate);
-            } else if(append === '1') { // Before
+            } else if(append === '2') { // Before
                 handleCaptionUpdate(interrogate + ', ' + datasetImage.caption);
-            } else if(append === '2') { // After
+            } else if(append === '3') { // After
                 handleCaptionUpdate(datasetImage.caption + ', ' + interrogate);
             }
             setBusy(false);
@@ -218,6 +221,23 @@ export const HomePage = (props) => {
 
     useEffect(() => {
         displayResizeButton();
+
+        // Add arrow keys as a scrolling method
+        const handleKeyPress = (event) => {
+            const key = event.keyCode;
+            if(key === 37) {
+                handleIndexChange(dataset.index + 1 - 1);
+            }
+            if(key === 39) {
+                handleIndexChange(dataset.index + 1 + 1);
+            }
+        }
+
+        document.addEventListener('keydown', handleKeyPress);
+
+        return function cleanup() {
+            document.removeEventListener('keydown', handleKeyPress);
+        }
     }, []);
 
     useEffect(() => {
@@ -274,6 +294,27 @@ export const HomePage = (props) => {
                                 }
                             </BVFlex>
                             {
+                                (!recommend) ?
+                                    <BVFlex flexGrow={0} bg='white'>
+                                        <HFlex justifyContent='space-between' mb={1}>
+                                            <Text color='black' mb='2px' ml='2px' fontSize='sm'>{(tagMode) ? 'Suggested Tags' : 'Caption'}</Text>
+                                            <Button flexGrow={0}>X</Button>
+                                        </HFlex>
+                                        <HFlex>
+                                            {
+                                                (tagMode) ?
+                                                    <HFlex flexWrap='wrap' gap={1}>
+                                                        {recommend.map((val, index) => <Tag key={'suggested-' + val} cursor='pointer' name={val} onClick='' disabled/>)}
+                                                    </HFlex>
+                                                    :
+                                                    <Text>{recommend}</Text>
+                                            }
+                                        </HFlex>
+                                    </BVFlex>
+                                    :
+                                    <></>
+                            }
+                            {
                                 (() => {
                                     if(tagMode) {
                                         let activeTags = datasetImage.caption.split(',').map(val => val.trim());
@@ -306,9 +347,10 @@ export const HomePage = (props) => {
                                         <BVFlex p={3}>
                                             <Text color='black' mb={2} fontSize='sm'>Append Options</Text>
                                             <RadioGroup display='flex' gap={3} color='black' size='sm' value={append} onChange={setAppend}>
-                                                <Radio value='0'>Replace</Radio>
-                                                <Radio value='1'>Before</Radio>
-                                                <Radio value='2'>After</Radio>
+                                                <Radio value='0'>Recommend</Radio>
+                                                <Radio value='1'>Replace</Radio>
+                                                <Radio value='2'>Before</Radio>
+                                                <Radio value='3'>After</Radio>
                                             </RadioGroup>
                                         </BVFlex>
                                     </VFlex>
