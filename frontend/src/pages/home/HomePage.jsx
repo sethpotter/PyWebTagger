@@ -65,6 +65,7 @@ export const HomePage = (props) => {
     const [showTagCounts, setShowTagCounts] = useState(false);
     const [sortMode, setSortMode] = useState('0');
     const [sortTags, setSortTags] = useState(false);
+    const [formatTags, setFormatTags] = useState(false);
 
     const [threshold, setThreshold] = useState(0.8);
     const [append, setAppend] = useState('0');
@@ -130,21 +131,29 @@ export const HomePage = (props) => {
 
     const loadDatasetImage = (index) => {
         load_image(index).then((datasetImage) => {
-            // Needs to be here
             datasetImage.original_caption = datasetImage.caption;
 
-            if(tagMode && sortTags) {
-                let tags = datasetImage.caption.split(',').map(val => val.trim());
-                if(sortMode === '1') {
-                    tags = tags.sort((a, b) => a.localeCompare(b));
-                } else if(sortMode === '2') {
-                    tags = tags.sort((a, b) => dataset.available_tags[b] - dataset.available_tags[a]);
-                }
+            if(tagMode) {
+                const tags = handleTagOptions(datasetImage.caption.split(',').map(val => val.trim()));
                 datasetImage.caption = tags.join(', ');
             }
 
             setDatasetImage(datasetImage);
         });
+    }
+
+    const handleTagOptions = (tags) => {
+        if(sortTags) {
+            if(sortMode === '1') {
+                tags = tags.sort((a, b) => a.localeCompare(b));
+            } else if(sortMode === '2') {
+                tags = tags.sort((a, b) => dataset.available_tags[b] - dataset.available_tags[a]);
+            }
+        }
+        if(formatTags) {
+            tags = tags.map(t => t.trim().toLowerCase().replaceAll(' ', '_'));
+        }
+        return tags;
     }
 
     const handleCaptionUpdate = (caption) => {
@@ -239,7 +248,7 @@ export const HomePage = (props) => {
                                         <HFlex flexWrap='wrap' gap={1}>
                                             {
                                                 (() => {
-                                                    let tags = datasetImage.caption.split(',').map(val => val.trim());
+                                                    const tags = handleTagOptions(datasetImage.caption.split(',').map(val => val.trim()));
                                                     const dupes = tags.filter((t, i) => tags.indexOf(t) !== i);
 
                                                     const tagBackground = (tag) => {
@@ -251,15 +260,6 @@ export const HomePage = (props) => {
                                                         }
                                                         return 'white';
                                                     };
-
-                                                    // Needs to be in here for when we add a tag to the caption. It needs to resort.
-                                                    if(sortTags) {
-                                                        if(sortMode === '1') {
-                                                            tags = tags.sort((a, b) => a.localeCompare(b));
-                                                        } else if(sortMode === '2') {
-                                                            tags = tags.sort((a, b) => dataset.available_tags[b] - dataset.available_tags[a]);
-                                                        }
-                                                    }
 
                                                     const onClick = (index) => {
                                                         handleCaptionUpdate(tags.filter((v, i) => i !== index).join(', '));
@@ -335,11 +335,15 @@ export const HomePage = (props) => {
                                                         <Switch onChange={(e) => setShowTagCounts(e.currentTarget.checked)}/>
                                                     </HStack>
                                                     <HStack>
+                                                        <Text color='black' mb='1px' fontSize='sm' title='Replaces spaces with underscores and makes tags lowercase'>Format Tags</Text>
+                                                        <Switch onChange={(e) => setFormatTags(e.currentTarget.checked)}/>
+                                                    </HStack>
+                                                    <HStack>
                                                         <Text color='black' mb='1px' fontSize='sm' title='If the image tags should be sorted as well'>Sort Image Tags</Text>
                                                         <Switch onChange={(e) => setSortTags(e.currentTarget.checked)}/>
                                                     </HStack>
                                                     <HStack gap={0}>
-                                                        <Text color='black' mb='1px' fontSize='sm' w='140px' title='The sorting mode of tags on the tag editor'>Sorting Mode</Text>
+                                                        <Text color='black' mb='1px' fontSize='sm' w='140px' title='Controls how the tags should be sorted'>Sorting Mode</Text>
                                                         <Select color='black' size='xs' onChange={(e) => setSortMode(e.target.value)} value={sortMode}>
                                                             <option value='0'>No Sorting</option>
                                                             <option value='1'>Alphanumeric</option>
