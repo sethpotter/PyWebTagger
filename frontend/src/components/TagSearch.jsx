@@ -48,19 +48,20 @@ export const TagSearch = (props) => {
     const modifyTags = () => {
         const keyValue = Object.entries(tags);
 
-        if(sortMode === '0') {
+        if(sortMode === '1') {
             keyValue.sort((a, b) => a[0].localeCompare(b[0]));
-        } else if(sortMode === '1') {
+        } else if(sortMode === '2') {
             keyValue.sort((a, b) => b[1] - a[1]);
         }
 
         const databaseKeys = keyValue.map(([key, value]) => key);
+
         const enabledWithoutDatabaseTags = enabledTags.filter(t => databaseKeys.some(v => v === t));
         const databaseWithoutEnabledTags = databaseKeys.filter(t => !enabledTags.some(v => v === t));
 
         const tagsAtFront = enabledWithoutDatabaseTags.concat(databaseWithoutEnabledTags);
 
-        return tagsAtFront.filter((val) => val.includes(tagSearch));
+        return tagsAtFront.filter((val) => val.toLowerCase().includes(tagSearch.toLowerCase()));
     }
 
     return (
