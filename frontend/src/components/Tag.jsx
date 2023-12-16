@@ -21,11 +21,9 @@ export const Tag = (props) => {
         setOn(toggled);
     }, [toggled])
 
-    //onClick={() => handleToggle()}
-
     return (
         <>
-            <Box {...extra} py={1} px={2} border='1px solid' borderColor='gray.200' borderRadius={5} bg={(on) ? 'blue.200' : 'gray.100'}>
+            <Box {...extra} onClick={() => handleToggle()} py={1} px={2} border='1px solid' borderColor='gray.200' borderRadius={5} bg={(on) ? 'blue.200' : 'gray.100'}>
                 <Text color='black' fontSize='sm' mb={0} cursor={(disabled) ? '' : 'pointer'} userSelect='none'>{name}</Text>
             </Box>
         </>
