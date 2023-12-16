@@ -2,7 +2,7 @@
 
 This is a standalone dataset creation tool for stable diffusion primarily focused on using tags to describe images.
 
-![2](./showcase/2.jpg)
+![3](./showcase/3.jpg)
 
 ## Getting Started
 
