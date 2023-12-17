@@ -50,12 +50,8 @@ appendDefaultProps([Input], {
 
 export const Editor = (props) => {
 
-    const [datasetPath, setDatasetPath] = useState(() => {
-        const stored = localStorage.getItem('datasetPath');
-        return (stored === undefined) ? '' : localStorage.getItem('datasetPath');
-    });
+    const {dataset, setIndex} = props;
 
-    const [dataset, setDataset] = useState(new Dataset(0, '', 0, {}));
     const [datasetImage, setDatasetImage] = useState(new DatasetImage(0, {}, '', ''));
 
     const [tagMode, setTagMode] = useState(false);
@@ -101,43 +97,6 @@ export const Editor = (props) => {
         });
     };
 
-    const handleIndexChange = (index) => {
-        if(isNaN(index)) {
-            return;
-        }
-
-        if(index > dataset.num_files - 1) {
-            index = dataset.num_files - 1;
-        }
-        if(index < 0) {
-            index = 0;
-        }
-
-        const loadNextImage = () => {
-            setDataset(new Dataset(index, dataset.path, dataset.num_files, dataset.available_tags));
-            loadDatasetImage(index);
-        }
-
-
-        if(autoSave) {
-            // Only save if something changed
-            if(datasetImage.caption !== datasetImage.original_caption) {
-                handleCaptionSave(dataset.index, datasetImage.caption, loadNextImage);
-                return;
-            }
-        }
-
-        loadNextImage();
-    }
-
-    const handleSetDataset = () => {
-        load_dataset(datasetPath).then((data) => {
-            console.log("Loaded new dataset with " + dataset.num_files + " files");
-            setDataset(data);
-            loadDatasetImage(0);
-        });
-    }
-
     const loadDatasetImage = (index) => {
 
         setRecommend([]);
@@ -170,7 +129,7 @@ export const Editor = (props) => {
 
     const handleCaptionUpdate = (caption) => {
         console.log(caption);
-        const newDatasetImage = new DatasetImage(datasetImage.image, datasetImage.size, datasetImage.path, caption);
+        const newDatasetImage = new DatasetImage(datasetImage.index, datasetImage.image, datasetImage.size, datasetImage.path, caption);
         newDatasetImage.original_caption = datasetImage.original_caption;
         setDatasetImage(newDatasetImage);
     }
@@ -205,7 +164,7 @@ export const Editor = (props) => {
         }
 
         save_caption(index, tagsJoined).then(() => {
-            const newDatasetImage = new DatasetImage(datasetImage.image, datasetImage.size, datasetImage.path, tagsJoined);
+            const newDatasetImage = new DatasetImage(index, datasetImage.image, datasetImage.size, datasetImage.path, tagsJoined);
             newDatasetImage.original_caption = tagsJoined;
             setDatasetImage(newDatasetImage);
             console.log("Saved " + index + " with caption " + tagsJoined);
@@ -257,10 +216,10 @@ export const Editor = (props) => {
         const handleKeyPress = (event) => {
             const key = event.keyCode;
             if(key === 37) {
-                handleIndexChange(dataset.index - 1);
+                setIndex(dataset.index - 1);
             }
             if(key === 39) {
-                handleIndexChange(dataset.index + 1);
+                setIndex(dataset.index + 1);
             }
         }
 
@@ -272,22 +231,27 @@ export const Editor = (props) => {
     }, [dataset]);
 
     useEffect(() => {
-        localStorage.setItem('datasetPath', datasetPath);
-    }, [datasetPath]);
+        // Dataset is not loaded yet.
+        if(dataset.num_files <= 0)
+            return;
+
+        const loadNextImage = () => loadDatasetImage(dataset.index);
+
+        if(autoSave) {
+            // Only save if something changed
+            if(datasetImage.caption !== datasetImage.original_caption) {
+                handleCaptionSave(datasetImage.index, datasetImage.caption, loadNextImage);
+                return;
+            }
+        }
+
+        loadNextImage();
+    }, [dataset])
 
     return (
         <>
             <Box bg='white' p={5} color='white'>
                 <VFlex gap={3}>
-                    <BHFlex gap={3}>
-                        <VFlex>
-                            <Text color='black' mb='1px' ml='10px' fontSize='sm'>Path to Dataset</Text>
-                            <BHFlex p={3}>
-                                <Input bg='white' color='black' placeholder='...' value={datasetPath} onChange={(e) => setDatasetPath(e.target.value)} />
-                            </BHFlex>
-                        </VFlex>
-                        <Button colorScheme='blue' h onClick={() => handleSetDataset()}>Process</Button>
-                    </BHFlex>
                     <HFlex gap={3}>
                         <VFlex w='50%' bg='gray.100' p={2} borderRadius={5} gap={5}>
                             <BVFlex flexGrow={0} bg='white'>
@@ -443,9 +407,7 @@ export const Editor = (props) => {
                                                 <></>
                                         }
                                     </VFlex>
-
                                 </VFlex>
-
                             </BVFlex>
                         </VFlex>
                         <VFlex w='50%' gap={3}>
@@ -468,11 +430,11 @@ export const Editor = (props) => {
                                             <Text fontSize='xs' height='20px' textAlign='center' color='black'>Dataset Index</Text>
                                         </HFlex>
                                         <HFlex position='absolute' top='-16px' right='2px' py={1}>
-                                            <Input minHeight='0px' maxWidth='100px' placeholder='...' value={dataset.index+1} onChange={(e) => handleIndexChange(e.target.value)} fontSize='xs' height='20px' textAlign='center' color='black' bg='white' />
+                                            <Input minHeight='0px' maxWidth='100px' placeholder='...' value={dataset.index+1} onChange={(e) => setIndex(e.target.value)} fontSize='xs' height='20px' textAlign='center' color='black' bg='white' />
                                         </HFlex>
                                     </Box>
                                     <HFlex>
-                                        <Slider flexGrow={1} w='50%' onChange={(val) => handleIndexChange(val - 1)} value={dataset.index + 1} defaultValue={1} min={1} max={(dataset) ? dataset.num_files : 2}>
+                                        <Slider flexGrow={1} w='50%' onChange={(val) => setIndex(val - 1)} value={dataset.index + 1} defaultValue={1} min={1} max={(dataset) ? dataset.num_files : 2}>
                                             <SliderTrack>
                                             <SliderFilledTrack />
                                             </SliderTrack>
@@ -482,8 +444,8 @@ export const Editor = (props) => {
                                 </BVFlex>
                             </HFlex>
                             <HFlex gap={3}>
-                                <Button colorScheme='blue' h onClick={() => handleIndexChange(dataset.index - 1)}>Previous</Button>
-                                <Button colorScheme='blue' h onClick={() => handleIndexChange(dataset.index + 1)}>Next</Button>
+                                <Button colorScheme='blue' h onClick={() => setIndex(dataset.index - 1)}>Previous</Button>
+                                <Button colorScheme='blue' h onClick={() => setIndex(dataset.index + 1)}>Next</Button>
                             </HFlex>
                             <Button colorScheme='blue' h onClick={() => handleCaptionSave(dataset.index, datasetImage.caption)}>Save Caption</Button>
                         </VFlex>
