@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 
 import {Box, Button, Divider, Input, Text} from "@chakra-ui/react";
-import {BVFlex, HFlex} from "./WrappedChakra";
+import {BVFlex, HFlex, VFlex} from "./WrappedChakra";
 import {Tag} from "./Tag";
 
 export const TagSearch = (props) => {
@@ -68,10 +68,16 @@ export const TagSearch = (props) => {
         <>
             <BVFlex flexGrow={0} gap={2}>
                 <Text color='black' mb='0px' ml='2px' fontSize='sm'>Available Tags</Text>
-                <Input w='25%' bg='white' color='black' placeholder='Search tags...' value={tagSearch}
+                <HFlex w='50%'>
+                    <Input bg='white' color='black' placeholder='Search tags...' value={tagSearch}
                        onChange={(e) => {
                            handleSearch(e.target.value)
                        }}/>
+                    <VFlex position='relative' justifyContent='center'>
+                        <Button position='absolute' left='-30px' minHeight='10px' variant='ghost' size='xs' color='gray.500' onClick={() => setTagSearch('')}>X</Button>
+                    </VFlex>
+                </HFlex>
+
                 <BVFlex bg='white'>
                     <HFlex flexWrap='wrap' gap={1}>
                         {
