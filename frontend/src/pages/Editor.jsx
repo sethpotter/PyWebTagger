@@ -1,6 +1,5 @@
-import './HomePage.scss';
+import '../styles/Editor.scss';
 import React, {useEffect, useState} from 'react';
-import axios from "axios";
 
 import {
     Input,
@@ -27,17 +26,17 @@ import {
     NumberInput,
     NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Checkbox
 } from '@chakra-ui/react'
-import {VFlex, HFlex, BVFlex, BHFlex} from "../../components/WrappedChakra"
-import {load_dataset, load_image, save_caption, deepdanbooru} from "../../api/DatasetRoutes";
+import {VFlex, HFlex, BVFlex, BHFlex} from "../components/WrappedChakra"
+import {load_dataset, load_image, save_caption, deepdanbooru} from "../api/DatasetRoutes";
+import {appendDefaultProps} from "../util/ChakraUtil";
+import {Dataset} from "../models/Dataset";
+import {DatasetImage} from "../models/DatasetImage";
+import {Tag} from "../components/Tag";
+import {TagSearch} from "../components/TagSearch";
 
 // Unfortunately Chakra does not support adding default props from a theme.
 // So this workaround will have to do for now.
 // https://github.com/chakra-ui/chakra-ui/discussions/6025
-import {appendDefaultProps} from "../../util/ChakraUtil";
-import {Dataset} from "../../models/Dataset";
-import {DatasetImage} from "../../models/DatasetImage";
-import {Tag} from "../../components/Tag";
-import {TagSearch} from "../../components/TagSearch";
 appendDefaultProps([Flex, Button, Input], {
     flexGrow: 1,
     flexBasis: 0
@@ -49,7 +48,7 @@ appendDefaultProps([Input], {
     minHeight: '40px'
 });
 
-export const HomePage = (props) => {
+export const Editor = (props) => {
 
     const [datasetPath, setDatasetPath] = useState(() => {
         const stored = localStorage.getItem('datasetPath');

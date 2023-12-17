@@ -2,7 +2,7 @@ import React from 'react';
 import {BrowserRouter, useRoutes} from 'react-router-dom';
 import {routes} from './Routes';
 
-import './App.scss';
+import './styles/App.scss';
 
 function App() {
     const Routing = () => {

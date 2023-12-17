@@ -1,0 +1,22 @@
+#cropper {
+    display: none;
+    position: absolute;
+    border: 2px solid red;
+    color: red;
+    font-size: 28px;
+    z-index: 999;
+    user-select: none;
+}
+
+#display_resize_button {
+    position: absolute;
+    display: block;
+    background-image: linear-gradient(to bottom right, transparent 50%, rgb(200, 200, 200) 50%);
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    width: 20px;
+    height: 20px;
+    box-sizing: border-box;
+    cursor: ns-resize;
+}
