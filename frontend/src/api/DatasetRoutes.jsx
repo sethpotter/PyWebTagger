@@ -22,7 +22,7 @@ const load_image = (index) => {
 
     return axios.get(toRouteUrl('load_image', request)).then(res => {
         console.log(res);
-        return new DatasetImage(index, res.data.image, res.data.size, res.data.path, res.data.caption);
+        return new DatasetImage(index, 'data:image/png;base64,' + res.data.image, res.data.size, res.data.path, res.data.caption);
     }).catch(err => {
         console.log(err.response);
         return undefined;

@@ -250,7 +250,7 @@ export const Editor = (props) => {
 
     return (
         <>
-            <Box bg='white' p={5} color='white'>
+            <Box bg='white' color='white'>
                 <VFlex gap={3}>
                     <HFlex gap={3}>
                         <VFlex w='50%' bg='gray.100' p={2} borderRadius={5} gap={5}>
@@ -413,7 +413,7 @@ export const Editor = (props) => {
                         <VFlex w='50%' gap={3}>
                             <BVFlex id='display' position='relative' alignItems='center' justifyContent='center' p={4} height='1000px' minHeight='1000px'>
                                 <HFlex flexGrow={0} alignItems='center' justifyContent='center' maxHeight='100%'>
-                                    <Image height='100%' src={'data:image/png;base64,' + datasetImage.image} />
+                                    <Image height='100%' src={datasetImage.image} />
                                     <Box position='relative' w='0%' h='0%'>
                                         <div id='cropper'>Cropper</div>
                                     </Box>

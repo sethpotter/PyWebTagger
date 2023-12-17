@@ -61,10 +61,10 @@ export const WebTagger = (props) => {
                 </TabList>
                 <TabPanels>
                     <TabPanel>
-                        <Editor dataset={dataset} setIndex={handleIndexChange} />
+                        <Editor dataset={dataset} setIndex={handleIndexChange}/>
                     </TabPanel>
                     <TabPanel>
-                        <Gallery/>
+                        <Gallery dataset={dataset} setIndex={handleIndexChange}/>
                     </TabPanel>
                 </TabPanels>
             </Tabs>
