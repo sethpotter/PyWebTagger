@@ -134,7 +134,7 @@ export const Gallery = (props) => {
         const { isOpen, onOpen, onClose } = useDisclosure()
 
         return (
-            <Modal isOpen={modalOpen} onClose={() => setImagePreview({})}>
+            <Modal size='xl' isOpen={modalOpen} onClose={() => setImagePreview({})}>
                 <ModalOverlay/>
                 <ModalContent>
                     <ModalBody>
