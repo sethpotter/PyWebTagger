@@ -4,6 +4,8 @@ This is a standalone dataset creation tool for stable diffusion primarily focuse
 
 ![3](./showcase/3.jpg)
 
+![3-1](./showcase/3-1.png)
+
 ## Getting Started
 
 You can install this program by using Git bash and the following command
@@ -39,4 +41,4 @@ These are some of the long term goals I wish to achieve while working on this pr
 * Cropping - Able to crop images whether this is on another page or using the display.
 * Auto-Cropping - Set and go cropping with face detection if possible.
 * Bulk Tag Editor - Edit sets of tags at a time.
-* Gallery View - View multiple images
+* ~~Gallery View - View multiple images~~ Started.
