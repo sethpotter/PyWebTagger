@@ -34,22 +34,19 @@ export const Gallery = (props) => {
         const futureRequests = [];
         const promises = [];
 
-        for(let i = start; i < end; i++) {
+        for(let i = start; i < end + 1; i++) {
             const exists = requests.some(v => v.index === i) || images.some(v => v.index === i);
             if(!exists) {
                 const promise = load_image(i);
                 futureRequests.push({index: i, request: promise});
                 promises.push(promise);
-                console.log("Loading: " + (i));
+                //console.log("Loading: " + (i));
             }
         }
 
         const rangePredicate = (index) => (index >= start && index <= end);
         let staleRequests = requests.filter(req => !rangePredicate(req.index));
         let filteredRequests = requests.filter(req => !staleRequests.includes(req));
-
-        if(staleRequests.length > 0)
-            console.log(staleRequests);
 
         for(let req of staleRequests) {
             cancel_dataset_request(req.index);
@@ -59,30 +56,21 @@ export const Gallery = (props) => {
 
         //filterImages();
 
-        console.log(requests);
-        console.log(imageBuffer);
+        //console.log(requests);
+        //console.log(imageBuffer);
 
         if(promises.length === 0)
             return;
 
         Promise.all(promises).then(results => {
-            console.log("Promise CHUNK: " + results.length);
+            //console.log("Loading CHUNK: " + results.length);
             const filteredResults = results.filter(r => r);
             imageBuffer.images = imageBuffer.images.concat(filteredResults);
-            console.log(imageBuffer);
-            /*setImages(prevImages => {
-                //console.log(prevImages);
-                console.log(results);
-
-                //console.log(fin)
-                //console.log(prevImages.length + "+" + results.length + "=" + (prevImages.length + results.length));
-                return [...prevImages, ...filteredResults];
-            });*/
         }).catch(err => {
             /*setRequests(prevRequests => {
                 return prevRequests;
             });*/
-            console.error(err);
+            //console.error(err);
         });
     }
 
@@ -91,7 +79,7 @@ export const Gallery = (props) => {
         if(dataset.num_files <= 0)
             return;
 
-        loadDatasetImages(range[0] - 1, range[1]);
+        loadDatasetImages(range[0] - 1, range[1] - 1);
     }, [dataset, range]);
 
     useEffect(() => {
@@ -117,15 +105,11 @@ export const Gallery = (props) => {
         setHovered(index);
     }
 
-    const handleSliderMove = () => {
-
-    }
-
     return (
         <HFlex>
             <VFlex maxWidth='80%'>
                 <BVFlex justifyContent='center' alignItems='center'>
-                    <Text>Showing images from {range[0]}-{range[1]} images: {images.length} buffer: {imageBuffer.images.length} expected: {range[1] - range[0]} total: {dataset.num_files}</Text>
+                    <Text>Showing Images from {range[0]}-{range[1]} images: {images.length} buffer: {imageBuffer.images.length} requests: {requests.length} total: {dataset.num_files}</Text>
                     <HFlex w='100%'>
                         <RangeSlider aria-label={['min', 'max']} min={2} max={dataset.num_files+1} defaultValue={[1, 10]} onChange={(v) => setRange([v[0]-1, v[1]-1])}>
                             <RangeSliderTrack>
@@ -140,9 +124,9 @@ export const Gallery = (props) => {
                 {
                     images.map((datasetImage, i) => {
                         return (
-                            <VFlex flexGrow={1}>
-                                <BHFlex w='200px' h='200px' justifyContent='center' onMouseOver={(e) => handleMouseOver(e, i)}>
-                                    <Image h='100%' src={datasetImage.image}></Image>
+                            <VFlex position='relative' alignItems='center' justifyContent='center' onMouseOver={(e) => handleMouseOver(e, i)}>
+                                <BHFlex width='200px' height='200px' alignItems='center' justifyContent='center'>
+                                    <Image maxHeight='100%' src={datasetImage.image}></Image>
                                 </BHFlex>
                             </VFlex>
                         );
@@ -152,9 +136,11 @@ export const Gallery = (props) => {
             </VFlex>
             <VFlex maxWidth='20%'>
                 {
-                    (hovered >= 0) ?
+                    (hovered >= 0 && images[hovered]) ?
                         <BVFlex>
-
+                            <Text>{images[hovered].index}</Text>
+                            <Text>{images[hovered].path}</Text>
+                            <Text>{images[hovered].caption}</Text>
                         </BVFlex>
                         :
                         <></>
