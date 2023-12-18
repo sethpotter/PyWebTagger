@@ -1,8 +1,11 @@
 import React, {useEffect, useState} from 'react'
 
-import {Box, Button, Divider, Input, Text} from "@chakra-ui/react";
+import {Box, Button, Divider, Icon, Input, Text} from "@chakra-ui/react";
 import {BVFlex, HFlex, VFlex} from "./WrappedChakra";
 import {Tag} from "./Tag";
+
+import { GoX } from "react-icons/go";
+import { MdSettings } from 'react-icons/md'
 
 export const TagSearch = (props) => {
 
@@ -74,7 +77,9 @@ export const TagSearch = (props) => {
                            handleSearch(e.target.value)
                        }}/>
                     <VFlex position='relative' justifyContent='center'>
-                        <Button position='absolute' left='-30px' minHeight='10px' variant='ghost' size='xs' color='gray.500' onClick={() => setTagSearch('')}>X</Button>
+                        <Button position='absolute' left='-30px' px={0} mt={1} minHeight='10px' variant='ghost' size='xs' color='gray.500' onClick={() => setTagSearch('')}>
+                            <Icon color='gray.600' as={GoX} w='18px' h='18px'/>
+                        </Button>
                     </VFlex>
                 </HFlex>
 
