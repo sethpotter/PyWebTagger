@@ -263,6 +263,9 @@ export const Editor = (props) => {
                                         <HFlex flexWrap='wrap' gap={1}>
                                             {
                                                 (() => {
+                                                    if(!datasetImage.caption)
+                                                        return;
+
                                                     const tags = handleTagOptions(datasetImage.caption.split(',').map(val => val.trim()));
                                                     const dupes = tags.filter((t, i) => tags.indexOf(t) !== i);
 
@@ -305,6 +308,8 @@ export const Editor = (props) => {
                             {
                                 (() => {
                                     if(tagMode) {
+                                        if(!datasetImage.caption)
+                                            return;
                                         let activeTags = datasetImage.caption.split(',').map(val => val.trim());
                                         return (
                                             <TagSearch enabledTags={activeTags}
@@ -351,30 +356,30 @@ export const Editor = (props) => {
                                     <VFlex gap={1} maxHeight='125px' w='70%' flexWrap='wrap'>
                                         <HStack>
                                             <Text color='black' mb='1px' fontSize='sm' title='Activates tag mode which makes it easier to caption images with buttons'>Tag Mode</Text>
-                                            <Switch onChange={(e) => setTagMode(e.currentTarget.checked)}/>
+                                            <Switch isChecked={tagMode} onChange={(e) => setTagMode(e.currentTarget.checked)}/>
                                         </HStack>
                                         <HStack>
                                             <Text color='black' mb='1px' fontSize='sm' title='Save the caption when the image changes'>Auto Save</Text>
-                                            <Switch onChange={(e) => setAutoSave(e.currentTarget.checked)}/>
+                                            <Switch isChecked={autoSave} onChange={(e) => setAutoSave(e.currentTarget.checked)}/>
                                         </HStack>
                                         <HStack>
                                             <Text color='black' mb='1px' fontSize='sm' title='Recommend captions that are already present'>Interrogate Duplicates</Text>
-                                            <Switch onChange={(e) => setShowDupeRecommend(e.currentTarget.checked)}/>
+                                            <Switch isChecked={showDupeRecommend} onChange={(e) => setShowDupeRecommend(e.currentTarget.checked)}/>
                                         </HStack>
                                         {
                                             (tagMode) ?
                                                 <>
                                                     <HStack>
                                                         <Text color='black' mb='1px' fontSize='sm' title='Show the number of occurances beside the tag'>Tag Counts</Text>
-                                                        <Switch onChange={(e) => setShowTagCounts(e.currentTarget.checked)}/>
+                                                        <Switch isChecked={showTagCounts} onChange={(e) => setShowTagCounts(e.currentTarget.checked)}/>
                                                     </HStack>
                                                     <HStack>
                                                         <Text color='black' mb='1px' fontSize='sm' title='Replaces spaces with underscores and makes tags lowercase'>Format Tags</Text>
-                                                        <Switch onChange={(e) => setFormatTags(e.currentTarget.checked)}/>
+                                                        <Switch isChecked={formatTags} onChange={(e) => setFormatTags(e.currentTarget.checked)}/>
                                                     </HStack>
                                                     <HStack>
                                                         <Text color='black' mb='1px' fontSize='sm' title='If the image tags should be sorted as well'>Sort Image Tags</Text>
-                                                        <Switch onChange={(e) => setSortTags(e.currentTarget.checked)}/>
+                                                        <Switch isChecked={sortTags} onChange={(e) => setSortTags(e.currentTarget.checked)}/>
                                                     </HStack>
                                                     <HStack>
                                                         <Text color='black' mb='1px' fontSize='sm' title='Controls how the tags should be sorted'>Sorting Mode</Text>
@@ -386,11 +391,11 @@ export const Editor = (props) => {
                                                     </HStack>
                                                     <HStack>
                                                         <Text color='black' mb='1px' fontSize='sm' title='Highlight duplicate tags'>Highlight Dupes</Text>
-                                                        <Switch onChange={(e) => setHighlightDupes(e.currentTarget.checked)}/>
+                                                        <Switch isChecked={highlightDupes} onChange={(e) => setHighlightDupes(e.currentTarget.checked)}/>
                                                     </HStack>
                                                     <HStack>
                                                         <Text color='black' mb='1px' fontSize='sm' title='Highlight tags that are new'>Highlight New Tags</Text>
-                                                        <Switch onChange={(e) => setHighlightNew(e.currentTarget.checked)}/>
+                                                        <Switch isChecked={highlightNew} onChange={(e) => setHighlightNew(e.currentTarget.checked)}/>
                                                     </HStack>
                                                     <HStack>
                                                         <Text color='black' mb='1px' fontSize='sm' title='The amount of tags to display per page'>Tags Per Page</Text>
