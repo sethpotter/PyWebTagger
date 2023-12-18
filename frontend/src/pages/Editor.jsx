@@ -317,9 +317,9 @@ export const Editor = (props) => {
                             {
                                 (() => {
                                     if(tagMode) {
-                                        if(!datasetImage.caption)
-                                            return;
-                                        let activeTags = datasetImage.caption.split(',').map(val => val.trim());
+                                        let activeTags = [];
+                                        if(datasetImage.caption)
+                                            activeTags = datasetImage.caption.split(',').map(val => val.trim());
                                         return (
                                             <TagSearch enabledTags={activeTags}
                                                tags={dataset.available_tags}
