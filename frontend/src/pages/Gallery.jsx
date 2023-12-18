@@ -5,11 +5,24 @@ import {cancel_dataset_request, load_image} from "../api/DatasetRoutes";
 import {Box, Button, Flex, Image, Text} from '@chakra-ui/react'
 
 import {
-  RangeSlider,
-  RangeSliderTrack,
-  RangeSliderFilledTrack,
-  RangeSliderThumb,
+    RangeSlider,
+    RangeSliderTrack,
+    RangeSliderFilledTrack,
+    RangeSliderThumb,
 } from '@chakra-ui/react'
+
+import { useDisclosure } from '@chakra-ui/react'
+
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+} from '@chakra-ui/react'
+
 import data from "bootstrap/js/src/dom/data";
 
 
@@ -21,10 +34,11 @@ export const Gallery = (props) => {
     const [images, setImages] = useState([]);
     const [hovered, setHovered] = useState(-1);
     const [range, setRange] = useState([]);
-
     const [requests, setRequests] = useState([]);
 
     const [imageBuffer] = useState({range: [0,0], images: []});
+    
+    const [imagePreview, setImagePreview] = useState({});
 
     const loadDatasetImages = (start, end) => {
 
@@ -84,14 +98,21 @@ export const Gallery = (props) => {
 
     useEffect(() => {
 
-        const interval = setInterval(() => filterImages(), 250);
+        const interval = setInterval(() => {
+            if(!imagePreview.image) {
+                const imageBufferChanged = images !== imageBuffer.images;
+                if(imageBuffer.images.length > 0 && imageBufferChanged)
+                    filterImages()
+            }
+        }, 250);
 
         return function cleanup() {
             clearInterval(interval);
             console.log("Cleanup!");
         }
 
-    }, []);
+        // TODO Horrible way of dealing with images hook.
+    }, [images]);
 
     const filterImages = () => {
         const rangePredicate = (index) => (index >= imageBuffer.range[0] && index <= imageBuffer.range[1]);
@@ -105,47 +126,70 @@ export const Gallery = (props) => {
         setHovered(index);
     }
 
+
+
+    const ImageModal = (props) => {
+
+        const { modalOpen } = props;
+        const { isOpen, onOpen, onClose } = useDisclosure()
+
+        return (
+            <Modal isOpen={modalOpen} onClose={() => setImagePreview({})}>
+                <ModalOverlay/>
+                <ModalContent>
+                    <ModalBody>
+                        <Image src={imagePreview.image}></Image>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+        );
+    }
+
     return (
-        <HFlex>
-            <VFlex maxWidth='80%'>
-                <BVFlex justifyContent='center' alignItems='center'>
-                    <Text>Showing Images from {range[0]}-{range[1]} images: {images.length} buffer: {imageBuffer.images.length} requests: {requests.length} total: {dataset.num_files}</Text>
-                    <HFlex w='100%'>
-                        <RangeSlider aria-label={['min', 'max']} min={2} max={dataset.num_files+1} defaultValue={[1, 10]} onChange={(v) => setRange([v[0]-1, v[1]-1])}>
-                            <RangeSliderTrack>
-                                <RangeSliderFilledTrack/>
-                            </RangeSliderTrack>
-                            <RangeSliderThumb index={0}/>
-                            <RangeSliderThumb index={1}/>
-                        </RangeSlider>
-                    </HFlex>
-                </BVFlex>
-                <BHFlex flexWrap='wrap' gap={2}>
-                {
-                    images.map((datasetImage, i) => {
-                        return (
-                            <VFlex position='relative' alignItems='center' justifyContent='center' onMouseOver={(e) => handleMouseOver(e, i)}>
-                                <BHFlex width='200px' height='200px' alignItems='center' justifyContent='center'>
-                                    <Image maxHeight='100%' src={datasetImage.image}></Image>
-                                </BHFlex>
-                            </VFlex>
-                        );
-                    })
-                }
-                </BHFlex>
-            </VFlex>
-            <VFlex maxWidth='20%'>
-                {
-                    (hovered >= 0 && images[hovered]) ?
-                        <BVFlex>
-                            <Text>{images[hovered].index}</Text>
-                            <Text>{images[hovered].path}</Text>
-                            <Text>{images[hovered].caption}</Text>
-                        </BVFlex>
-                        :
-                        <></>
-                }
-            </VFlex>
-        </HFlex>
+        <>
+            <ImageModal modalOpen={imagePreview.image}/>
+            <HFlex>
+                <VFlex maxWidth='80%'>
+                    <BVFlex justifyContent='center' alignItems='center'>
+                        <Text>Showing Images from {range[0]}-{range[1]} images: {images.length} buffer: {imageBuffer.images.length} requests: {requests.length} total: {dataset.num_files}</Text>
+                        <HFlex w='100%'>
+                            <RangeSlider aria-label={['min', 'max']} min={2} max={(dataset.num_files > 0) ? dataset.num_files + 1 : 10} defaultValue={[1, 10]} onChange={(v) => setRange([v[0]-1, v[1]-1])}>
+                                <RangeSliderTrack>
+                                    <RangeSliderFilledTrack/>
+                                </RangeSliderTrack>
+                                <RangeSliderThumb index={0}/>
+                                <RangeSliderThumb index={1}/>
+                            </RangeSlider>
+                        </HFlex>
+                    </BVFlex>
+                    <BHFlex flexWrap='wrap' gap={2}>
+                    {
+                        images.map((datasetImage, i) => {
+                            return (
+                                <VFlex position='relative' alignItems='center' justifyContent='center' onMouseOver={(e) => handleMouseOver(e, i)} onClick={() => setImagePreview(datasetImage)}>
+                                    <BHFlex width='200px' height='200px' alignItems='center' justifyContent='center'>
+                                        <Image maxHeight='100%' src={datasetImage.image}></Image>
+                                    </BHFlex>
+                                </VFlex>
+                            );
+                        })
+                    }
+                    </BHFlex>
+                </VFlex>
+                <VFlex maxWidth='20%'>
+                    {
+                        (hovered >= 0 && images[hovered]) ?
+                            <BVFlex>
+                                <Text>{images[hovered].index}</Text>
+                                <Text>{images[hovered].path}</Text>
+                                <Text>{images[hovered].caption}</Text>
+                            </BVFlex>
+                            :
+                            <></>
+                    }
+                </VFlex>
+            </HFlex>
+        </>
+
     );
 }
