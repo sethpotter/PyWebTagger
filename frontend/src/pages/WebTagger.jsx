@@ -69,10 +69,14 @@ export const WebTagger = (props) => {
             </BHFlex>
             <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
                 <TabList>
+                    <Tab>Hierarchy</Tab>
                     <Tab>Editor</Tab>
                     <Tab>Gallery</Tab>
                 </TabList>
                 <TabPanels>
+                    <TabPanel>
+                        <Editor dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
+                    </TabPanel>
                     <TabPanel>
                         <Editor dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
                     </TabPanel>

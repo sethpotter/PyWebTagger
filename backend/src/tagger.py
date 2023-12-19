@@ -37,12 +37,13 @@ class Tagger:
         self.dataset = None
         self.num_files = None
 
-    def load_dataset(self, path: str):
+    def load_dataset(self, *, path: str, files: [str]):
         if not os.path.isdir(path):
             raise NotADirectoryError("Invalid dataset path", path)
+
         self.index = 0
         self.path = path
-        self.dataset = load_dataset(path)
+        self.dataset = load_dataset(path=path, files=files)
         self.num_files = len(self.dataset)
 
     def set_index(self, index: int):
@@ -93,8 +94,11 @@ class Tagger:
 # Helper Functions #
 
 
-def load_dataset(path: str):
-    files = recursive_dir(path, [".png", ".jpg", ".jpeg", ".webp"])
+def load_dataset(*, path: str, files: list[str]) -> list[DatasetImage]:
+    exts = [".png", ".jpg", ".jpeg", ".webp"]
+    if path:
+        files = recursive_dir(path)
+    files = [f for f in files if any(f.lower().endswith(ex) for ex in exts)]
     files = sort_alphanumeric(files)
     dataset = []
     for f in files:
@@ -158,14 +162,12 @@ def sort_alphanumeric(l: list):
     return sorted(l, key=alphanum_key)
 
 
-def recursive_dir(path: str, exts: list):
+def recursive_dir(path: str) -> [str]:
     r = []
     for f in os.listdir(path):
         jf = os.path.join(path, f)
         if os.path.isdir(jf):
-            r += recursive_dir(jf, exts)
+            r += recursive_dir(jf)
         elif os.path.isfile(jf):
-            for ext in exts:
-                if jf.lower().endswith(ext):
-                    r.append(jf)
+            r.append(jf)
     return r

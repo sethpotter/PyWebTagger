@@ -11,6 +11,8 @@ import torch
 import tqdm
 import numpy as np
 
+from backend.src.tagger import recursive_dir
+
 app = FastAPI()
 gelbooru = Gelbooru()
 tagger = Tagger()
@@ -73,9 +75,10 @@ async def deepdanbooru(path: str, threshold: float):
 
 @app.get("/load_dataset")
 async def load_dataset(path: str):
-    tagger.load_dataset(path)
+    files = recursive_dir(path)
+    tagger.load_dataset(files=files)
     available_tags = load_dataset_tags(tagger.dataset)
-    return {'index': tagger.index, 'path': tagger.path, 'num_files': tagger.num_files, 'available_tags': available_tags}
+    return {'index': tagger.index, 'path': tagger.path, 'files': files, 'num_files': tagger.num_files, 'available_tags': available_tags}
 
 
 @app.get("/get_duplicates")
