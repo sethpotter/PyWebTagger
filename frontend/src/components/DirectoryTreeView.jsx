@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {Dataset} from "../models/Dataset";
 import TreeView, { flattenTree } from "react-accessible-treeview";
-import { DiCss3, DiJavascript, DiNpm } from "react-icons/di";
 import {FaList, FaRegFolder, FaRegFolderOpen} from "react-icons/fa";
+import { GoFileMedia, GoFile } from "react-icons/go";
+import {Box, Text} from '@chakra-ui/react';
+import '../styles/DirectoryTreeView.scss';
 
 export const DirectoryTreeView = (props) => {
 
@@ -11,14 +12,13 @@ export const DirectoryTreeView = (props) => {
     const FileIcon = ({filename}) => {
         const extension = filename.slice(filename.lastIndexOf(".") + 1);
         switch (extension) {
-            case "js":
-                return <DiJavascript color="yellow" className="icon"/>;
-            case "css":
-                return <DiCss3 color="turquoise" className="icon"/>;
-            case "json":
-                return <FaList color="yellow" className="icon"/>;
-            case "npmignore":
-                return <DiNpm color="red" className="icon"/>;
+            case 'png':
+            case 'jpg':
+            case 'jpeg':
+            case 'webp':
+                return <GoFileMedia color='gray' className="icon"/>
+            case 'txt':
+                return <GoFile color='gray' className="icon"/>
             default:
                 return null;
         }
@@ -32,24 +32,57 @@ export const DirectoryTreeView = (props) => {
         );
 
     const convertListToFileStructure = (files) => {
-        const tree = {}
 
-        const basePathIndex = files.reduce((lowestIndex, path, currentIndex ) => {
-          return files[lowestIndex].lastIndexOf('/') > path.lastIndexOf('/') ? currentIndex : lowestIndex;
-        }, 0);
+        const buildStructure = (paths) => {
+            const folder = {name: '', children: []};
 
-        const basePath = files[basePathIndex];
+            if(paths)
+                paths.forEach(path => {
+                    addPathToFolder(folder, path.split('\\'));
+                });
 
-
-
-        for(let file of files) {
-            const filterPath = file.replace()
+            return folder;
         }
+
+        const addPathToFolder = (currentFolder, segments) => {
+            const segment = segments.shift();
+            const existingFolder = currentFolder.children.find(node => node.name === segment);
+
+            if (!existingFolder) {
+                const newFolder = {name: segment, children: []};
+                currentFolder.children.push(newFolder);
+
+                if (segments.length > 0) {
+                    addPathToFolder(newFolder, segments);
+                }
+            } else {
+                if (segments.length > 0) {
+                    addPathToFolder(existingFolder, segments);
+                }
+            }
+        }
+
+        const directoryFirst = (structure) => {
+            if(structure) {
+                if(structure.children) {
+                    const dirs = structure.children.filter(i => !i.name.includes('.'));
+                    const files = structure.children.filter(i => i.name.includes('.'));
+                    structure.children = dirs.concat(files);
+                    structure.children.forEach(s => directoryFirst(s));
+                }
+            }
+        }
+
+        const structure = buildStructure(files);
+        directoryFirst(structure);
+
+        return structure;
     }
 
     return (
         <TreeView
-            data={data}
+            className='directory'
+            data={flattenTree(convertListToFileStructure(files))}
             aria-label="directory tree"
             nodeRenderer={({
                                element,
@@ -58,14 +91,14 @@ export const DirectoryTreeView = (props) => {
                                getNodeProps,
                                level,
                            }) => (
-                <div {...getNodeProps()} style={{paddingLeft: 20 * (level - 1)}}>
+                <Box whiteSpace='nowrap' fontSize='sm' m={0} {...getNodeProps()} listStyleType='none' style={{paddingLeft: 25 * (level - 1)}}>
                     {isBranch ? (
                         <FolderIcon isOpen={isExpanded}/>
                     ) : (
                         <FileIcon filename={element.name}/>
                     )}
                     {element.name}
-                </div>
+                </Box>
             )}
         />
     );

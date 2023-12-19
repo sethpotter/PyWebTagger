@@ -289,7 +289,7 @@ export const Editor = (props) => {
                                             }
                                         </HFlex>
                                         :
-                                        <Textarea spellcheck='false' bg='white' color='black' fontSize='sm' placeholder='No caption found...' value={datasetImage.caption} onChange={(e) => handleCaptionUpdate(e.target.value)} disabled={(busy) ? true : ''} />
+                                        <Textarea spellCheck='false' bg='white' color='black' fontSize='sm' placeholder='No caption found...' value={datasetImage.caption} onChange={(e) => handleCaptionUpdate(e.target.value)} disabled={(busy) ? true : ''} />
                                 }
                                 <HFlex justifyContent='end' mt={1}>
                                     <Button flexGrow={0} px={0} minHeight='10px' variant='ghost' size='sm' color='gray.500' onClick={() => handleCaptionUpdate(datasetImage.original_caption)}>

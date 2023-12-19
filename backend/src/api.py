@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pygelbooru import Gelbooru
-from src.tagger import Tagger, load_dataset_tags, scan_duplicates
+from src.tagger import Tagger, load_dataset_tags, scan_duplicates, recursive_dir
 import base64
 from PIL import Image
 import os
@@ -11,7 +11,6 @@ import torch
 import tqdm
 import numpy as np
 
-from backend.src.tagger import recursive_dir
 
 app = FastAPI()
 gelbooru = Gelbooru()
@@ -76,6 +75,7 @@ async def deepdanbooru(path: str, threshold: float):
 @app.get("/load_dataset")
 async def load_dataset(path: str):
     files = recursive_dir(path)
+    tagger.path = path
     tagger.load_dataset(files=files)
     available_tags = load_dataset_tags(tagger.dataset)
     return {'index': tagger.index, 'path': tagger.path, 'files': files, 'num_files': tagger.num_files, 'available_tags': available_tags}

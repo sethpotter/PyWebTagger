@@ -13,7 +13,7 @@ import {GoFileDirectory} from "react-icons/go";
 
 export const WebTagger = (props) => {
 
-    const [dataset, setDataset] = useState(new Dataset(0, '', 0, {}));
+    const [dataset, setDataset] = useState(new Dataset(0, '', [], 0, {}));
     const [datasetPath, setDatasetPath] = useState(() => {
         const stored = localStorage.getItem('datasetPath');
         return (stored === undefined) ? '' : localStorage.getItem('datasetPath');
@@ -42,7 +42,7 @@ export const WebTagger = (props) => {
             index = 0;
         }
 
-        setDataset(new Dataset(index, dataset.path, dataset.num_files, dataset.available_tags));
+        setDataset(new Dataset(index, dataset.path, dataset.files, dataset.num_files, dataset.available_tags));
     }
 
     useEffect(() => {

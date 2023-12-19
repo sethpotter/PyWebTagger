@@ -37,12 +37,12 @@ class Tagger:
         self.dataset = None
         self.num_files = None
 
-    def load_dataset(self, *, path: str, files: [str]):
-        if not os.path.isdir(path):
+    def load_dataset(self, *, path: str = None, files: [str] = None):
+        if path and not os.path.isdir(path):
+            self.path = path
             raise NotADirectoryError("Invalid dataset path", path)
 
         self.index = 0
-        self.path = path
         self.dataset = load_dataset(path=path, files=files)
         self.num_files = len(self.dataset)
 
@@ -94,7 +94,7 @@ class Tagger:
 # Helper Functions #
 
 
-def load_dataset(*, path: str, files: list[str]) -> list[DatasetImage]:
+def load_dataset(*, path: str = None, files: list[str] = None) -> list[DatasetImage]:
     exts = [".png", ".jpg", ".jpeg", ".webp"]
     if path:
         files = recursive_dir(path)
