@@ -13,11 +13,10 @@
 .directory .tree-node,
 .directory .tree-node-group {
 	list-style: none;
-	margin: 0;
-	padding: 0;
 }
 
 .directory .tree-node {
+	white-space: nowrap;
 	cursor: pointer;
 	display: flex;
 	align-items: center;

@@ -146,23 +146,12 @@ export const Gallery = (props) => {
         );
     }
 
-    const filterFiles = (files) => {
-        if(!dataset.path) {
-            return [];
-        }
-
-        let f = files.map(p => p.substring(dataset.path.length + 1));
-        f = f.filter(f => f.includes('.')).concat(f.filter(f => !f.includes('.')));
-
-        return f;
-    }
-
     return (
         <>
             <ImageModal modalOpen={imagePreview.image}/>
             <HFlex gap={1} maxHeight='1000px'>
                 <BVFlex flexGrow={0} minWidth='12.5%'>
-                    <DirectoryTreeView files={filterFiles(dataset.files)} />
+                    <DirectoryTreeView files={(dataset.hierarchy) ? dataset.hierarchy : []} />
                 </BVFlex>
                 <VFlex maxWidth='80%'>
                     <BVFlex justifyContent='center' alignItems='center'>

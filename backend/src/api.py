@@ -76,37 +76,29 @@ async def deepdanbooru(path: str, threshold: float):
 async def load_dataset(path: str):
     files = recursive_dir(path)
 
-    def build_hierarchy():
-        hierarchy = {'name': '', 'children': []}
-        stack = []
+    def generate_folder_structure():
+        root = {'name': 'root', 'children': []}
 
-        segment = segments.pop(0)
+        paths = [f[len(path)+1:] for f in files]
 
-        print(len(segments))
-
-        if len(segments) == 0:
-            return
-
-        print(hierarchy)
-        existing_folder = next((f for f in hierarchy['children'] if f.name == segment), None)
-        if not existing_folder:
-            new_folder = {'name': segment, 'children': []}
-            hierarchy['children'].append(new_folder)
-            if len(segments) > 0:
-                build_hierarchy(new_folder, segments)
-        else:
-            if len(segments) > 0:
-                build_hierarchy(existing_folder, segments)
-
-
-
-
-    build_hierarchy(hierarchy, files)
+        for p in paths:
+            current_folder = root
+            segments = p.split('\\')
+            for s in segments:
+                matching_folder = next((f for f in current_folder['children'] if f['name'] == s), None)
+                if matching_folder:
+                    current_folder = matching_folder
+                else:
+                    if '.' not in s:
+                        new_folder = {'name': s, 'children': []}
+                        current_folder['children'].append(new_folder)
+                        current_folder = new_folder
+        return root
 
     tagger.path = path
     tagger.load_dataset(files=files)
     available_tags = load_dataset_tags(tagger.dataset)
-    return {'index': tagger.index, 'path': tagger.path, 'hierarchy': hierarchy, 'num_files': tagger.num_files, 'available_tags': available_tags}
+    return {'index': tagger.index, 'path': tagger.path, 'hierarchy': generate_folder_structure(), 'num_files': tagger.num_files, 'available_tags': available_tags}
 
 
 @app.get("/get_duplicates")
