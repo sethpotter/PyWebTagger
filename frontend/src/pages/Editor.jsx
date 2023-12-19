@@ -51,7 +51,7 @@ appendDefaultProps([Input], {
 
 export const Editor = (props) => {
 
-    const {dataset, setIndex} = props;
+    const {dataset, setIndex, setTabIndex} = props;
 
     const [datasetImage, setDatasetImage] = useState(new DatasetImage(0, {}, '', ''));
 

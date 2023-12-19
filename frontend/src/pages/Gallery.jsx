@@ -29,7 +29,7 @@ import data from "bootstrap/js/src/dom/data";
 
 export const Gallery = (props) => {
 
-    const {dataset, setIndex} = props;
+    const {dataset, setIndex, setTabIndex} = props;
 
     const [images, setImages] = useState([]);
     const [hovered, setHovered] = useState(-1);
@@ -183,6 +183,10 @@ export const Gallery = (props) => {
                                 <Text>{images[hovered].index}</Text>
                                 <Text>{images[hovered].path}</Text>
                                 <Text>{images[hovered].caption}</Text>
+                                <Button colorScheme='blue' onClick={() => {
+                                    setIndex(images[hovered].index)
+                                    setTabIndex(0);
+                                }}>Send to Editor</Button>
                             </BVFlex>
                             :
                             <></>
