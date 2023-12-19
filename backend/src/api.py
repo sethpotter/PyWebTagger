@@ -75,10 +75,38 @@ async def deepdanbooru(path: str, threshold: float):
 @app.get("/load_dataset")
 async def load_dataset(path: str):
     files = recursive_dir(path)
+
+    def build_hierarchy():
+        hierarchy = {'name': '', 'children': []}
+        stack = []
+
+        segment = segments.pop(0)
+
+        print(len(segments))
+
+        if len(segments) == 0:
+            return
+
+        print(hierarchy)
+        existing_folder = next((f for f in hierarchy['children'] if f.name == segment), None)
+        if not existing_folder:
+            new_folder = {'name': segment, 'children': []}
+            hierarchy['children'].append(new_folder)
+            if len(segments) > 0:
+                build_hierarchy(new_folder, segments)
+        else:
+            if len(segments) > 0:
+                build_hierarchy(existing_folder, segments)
+
+
+
+
+    build_hierarchy(hierarchy, files)
+
     tagger.path = path
     tagger.load_dataset(files=files)
     available_tags = load_dataset_tags(tagger.dataset)
-    return {'index': tagger.index, 'path': tagger.path, 'files': files, 'num_files': tagger.num_files, 'available_tags': available_tags}
+    return {'index': tagger.index, 'path': tagger.path, 'hierarchy': hierarchy, 'num_files': tagger.num_files, 'available_tags': available_tags}
 
 
 @app.get("/get_duplicates")
