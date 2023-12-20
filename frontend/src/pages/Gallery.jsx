@@ -23,10 +23,6 @@ import {
     ModalCloseButton,
 } from '@chakra-ui/react'
 
-import data from "bootstrap/js/src/dom/data";
-import {DirectoryTreeView} from "../components/DirectoryTreeView";
-
-
 
 export const Gallery = (props) => {
 
@@ -150,9 +146,6 @@ export const Gallery = (props) => {
         <>
             <ImageModal modalOpen={imagePreview.image}/>
             <HFlex gap={1} maxHeight='1000px'>
-                <BVFlex flexGrow={0} minWidth='12.5%'>
-                    <DirectoryTreeView files={hierarchy} />
-                </BVFlex>
                 <VFlex maxWidth='80%'>
                     <BVFlex justifyContent='center' alignItems='center'>
                         <Text>Showing Images from {range[0]}-{range[1]} images: {images.length} buffer: {imageBuffer.images.length} requests: {requests.length} total: {dataset.num_files}</Text>
