@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pygelbooru import Gelbooru
-from src.tagger import Tagger, load_dataset_tags, scan_duplicates, recursive_dir
+from src.tagger import Tagger, load_dataset_tags, scan_duplicates, recursive_dir, recursive_dir_dir
 import base64
 from PIL import Image
 import os
@@ -74,14 +74,19 @@ async def deepdanbooru(path: str, threshold: float):
 
 @app.get("/load_dataset")
 async def load_dataset(path: str):
-    files = recursive_dir(path)
+    tagger.load_dataset(path=path)
+    available_tags = load_dataset_tags(tagger.dataset)
+    return {'index': tagger.index, 'path': tagger.path, 'num_files': tagger.num_files, 'available_tags': available_tags}
+
+
+@app.get("/load_hierarchy")
+async def load_hierarchy(path: str):
+    dirs = recursive_dir_dir(path)
 
     def generate_folder_structure():
         root = {'name': 'root', 'children': []}
 
-        paths = [f[len(path)+1:] for f in files]
-
-        for p in paths:
+        for p in dirs:
             current_folder = root
             segments = p.split('\\')
             for s in segments:
@@ -89,17 +94,12 @@ async def load_dataset(path: str):
                 if matching_folder:
                     current_folder = matching_folder
                 else:
-                    if '.' not in s:
-                        new_folder = {'name': s, 'children': []}
-                        current_folder['children'].append(new_folder)
-                        current_folder = new_folder
+                    new_folder = {'name': s, 'children': []}
+                    current_folder['children'].append(new_folder)
+                    current_folder = new_folder
         return root
 
-    tagger.path = path
-    tagger.load_dataset(files=files)
-    available_tags = load_dataset_tags(tagger.dataset)
-    return {'index': tagger.index, 'path': tagger.path, 'hierarchy': generate_folder_structure(), 'num_files': tagger.num_files, 'available_tags': available_tags}
-
+    return {generate_folder_structure()}
 
 @app.get("/get_duplicates")
 async def get_duplicates():

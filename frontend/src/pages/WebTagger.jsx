@@ -43,7 +43,7 @@ export const WebTagger = (props) => {
             index = 0;
         }
 
-        setDataset(new Dataset(index, dataset.path, dataset.files, dataset.num_files, dataset.available_tags));
+        setDataset(new Dataset(index, dataset.path, dataset.num_files, dataset.available_tags));
     }
 
     useEffect(() => {
@@ -70,13 +70,13 @@ export const WebTagger = (props) => {
             </BHFlex>
             <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
                 <TabList>
-                    {/*<Tab>Hierarchy</Tab>*/}
+                    {/*<Tab>Hierarchy.jsx</Tab>*/}
                     <Tab>Editor</Tab>
                     <Tab>Gallery</Tab>
                 </TabList>
                 <TabPanels>
                     {/*<TabPanel>
-                        <Hierarchy dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
+                        <Hierarchy.jsx dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
                     </TabPanel>*/}
                     <TabPanel>
                         <Editor dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>

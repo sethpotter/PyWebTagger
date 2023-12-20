@@ -171,3 +171,11 @@ def recursive_dir(path: str) -> [str]:
         elif os.path.isfile(jf):
             r.append(jf)
     return r
+
+
+def recursive_dir_dir(path: str) -> [str]:
+    r = []
+    for f in os.listdir(path):
+        if os.path.isdir(f):
+            r += recursive_dir(f)
+    return r
