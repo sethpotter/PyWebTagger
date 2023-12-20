@@ -187,7 +187,7 @@ export const Gallery = (props) => {
                                 <Text>{images[hovered].index}</Text>
                                 <Text>{images[hovered].path}</Text>
                                 <Text>{images[hovered].caption}</Text>
-                                <Button colorScheme='blue' onClick={() => {
+                                <Button maxHeight='50px' colorScheme='blue' onClick={() => {
                                     setIndex(images[hovered].index)
                                     setTabIndex(0);
                                 }}>Send to Editor</Button>
