@@ -84,9 +84,11 @@ async def load_hierarchy(path: str):
     dirs = recursive_dir_dir(path)
 
     def generate_folder_structure():
-        root = {'name': 'root', 'children': []}
+        root = {'name': os.path.basename(path), 'children': []}
 
-        for p in dirs:
+        cut_dirs = [d[len(path)+1:] for d in dirs]
+
+        for p in cut_dirs:
             current_folder = root
             segments = p.split('\\')
             for s in segments:
@@ -99,7 +101,7 @@ async def load_hierarchy(path: str):
                     current_folder = new_folder
         return root
 
-    return {generate_folder_structure()}
+    return {'hierarchy': generate_folder_structure()}
 
 @app.get("/get_duplicates")
 async def get_duplicates():

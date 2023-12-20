@@ -30,7 +30,7 @@ import {DirectoryTreeView} from "../components/DirectoryTreeView";
 
 export const Gallery = (props) => {
 
-    const {dataset, setIndex, setTabIndex} = props;
+    const {hierarchy, dataset, setIndex, setTabIndex} = props;
 
     const [images, setImages] = useState([]);
     const [hovered, setHovered] = useState(-1);
@@ -151,7 +151,7 @@ export const Gallery = (props) => {
             <ImageModal modalOpen={imagePreview.image}/>
             <HFlex gap={1} maxHeight='1000px'>
                 <BVFlex flexGrow={0} minWidth='12.5%'>
-                    <DirectoryTreeView files={(dataset.hierarchy) ? dataset.hierarchy : []} />
+                    <DirectoryTreeView files={hierarchy} />
                 </BVFlex>
                 <VFlex maxWidth='80%'>
                     <BVFlex justifyContent='center' alignItems='center'>

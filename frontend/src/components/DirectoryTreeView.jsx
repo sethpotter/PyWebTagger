@@ -9,9 +9,10 @@ export const DirectoryTreeView = (props) => {
     const [selected, setSelected] = useState();
     const {files} = props;
 
-    const getTree = (elements, node, depth = -1) => {
+    const getTree = (elements, node, depth = 0) => {
         if(!node)
             return;
+
         for (const child of node.children)
             getTree(elements, child, depth + 1);
         elements.push(
@@ -23,15 +24,17 @@ export const DirectoryTreeView = (props) => {
     }
 
     const getElements = () => {
+        if(!files)
+            return;
+
         let elements = [];
         getTree(elements, files)
-        elements.pop();
-        return elements;
+        return elements.reverse();
     }
 
     return (
         <VFlex className='directory' minHeight='200px'>
-            {(files.children) ? getElements() : <></>}
+            {(files) ? getElements() : <></>}
         </VFlex>
     );
 }

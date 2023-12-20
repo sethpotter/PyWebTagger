@@ -6,15 +6,15 @@ import {Tabs, TabList, TabPanels, Tab, TabPanel, Text, Input, Button, Icon, Flex
 import {Editor} from "./Editor";
 import {Gallery} from "./Gallery";
 import {Dataset} from "../models/Dataset";
-import {load_dataset} from "../api/DatasetRoutes";
+import {load_dataset, load_hierarchy} from "../api/DatasetRoutes";
 import {BHFlex, HFlex, VFlex} from "../components/WrappedChakra";
-import {GoFileDirectory} from "react-icons/go";
-import {Hierarchy} from "./Hierarchy";
+import {Hierarchy} from "../models/Hierarchy";
 
 
 export const WebTagger = (props) => {
 
-    const [dataset, setDataset] = useState(new Dataset(0, '', [], 0, {}));
+    const [hierarchy, setHierarchy] = useState(new Hierarchy({}));
+    const [dataset, setDataset] = useState(new Dataset(0, '', 0, {}));
     const [datasetPath, setDatasetPath] = useState(() => {
         const stored = localStorage.getItem('datasetPath');
         return (stored === undefined) ? '' : localStorage.getItem('datasetPath');
@@ -25,6 +25,10 @@ export const WebTagger = (props) => {
     const fileInput = useRef(null);
 
     const handleSetDataset = () => {
+        load_hierarchy(datasetPath).then((data) => {
+            console.log("Loaded new hierarchy");
+            setHierarchy(data.hierarchy);
+        });
         load_dataset(datasetPath).then((data) => {
             console.log("Loaded new dataset with " + dataset.num_files + " files");
             setDataset(data);
@@ -79,10 +83,10 @@ export const WebTagger = (props) => {
                         <Hierarchy.jsx dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
                     </TabPanel>*/}
                     <TabPanel>
-                        <Editor dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
+                        <Editor hierarchy={hierarchy} dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
                     </TabPanel>
                     <TabPanel>
-                        <Gallery dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
+                        <Gallery hierarchy={hierarchy} dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
                     </TabPanel>
                 </TabPanels>
             </Tabs>
