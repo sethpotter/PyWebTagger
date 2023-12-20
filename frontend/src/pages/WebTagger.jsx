@@ -9,6 +9,7 @@ import {Dataset} from "../models/Dataset";
 import {load_dataset} from "../api/DatasetRoutes";
 import {BHFlex, HFlex, VFlex} from "../components/WrappedChakra";
 import {GoFileDirectory} from "react-icons/go";
+import {Hierarchy} from "./Hierarchy";
 
 
 export const WebTagger = (props) => {
@@ -69,14 +70,14 @@ export const WebTagger = (props) => {
             </BHFlex>
             <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
                 <TabList>
-                    <Tab>Hierarchy</Tab>
+                    {/*<Tab>Hierarchy</Tab>*/}
                     <Tab>Editor</Tab>
                     <Tab>Gallery</Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel>
-                        <Editor dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
-                    </TabPanel>
+                    {/*<TabPanel>
+                        <Hierarchy dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
+                    </TabPanel>*/}
                     <TabPanel>
                         <Editor dataset={dataset} setIndex={handleIndexChange} setTabIndex={setTabIndex}/>
                     </TabPanel>
