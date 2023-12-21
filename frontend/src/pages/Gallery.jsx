@@ -66,7 +66,7 @@ export const Gallery = (props) => {
 
         setRequests([...filteredRequests, ...futureRequests]);
 
-        //filterImages();
+        filterImages();
 
         //console.log(requests);
         //console.log(imageBuffer);
