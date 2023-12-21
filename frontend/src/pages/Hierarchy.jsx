@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
 import {VFlex} from "../components/WrappedChakra";
-import {Box} from "@chakra-ui/react";
+import {Box, Button} from "@chakra-ui/react";
 import {FaRegFolder} from "react-icons/fa";
 import '../styles/Hierarchy.scss';
 import {load_dataset} from "../api/DatasetRoutes";
+
+import { useToast } from '@chakra-ui/react'
 
 export const Hierarchy = (props) => {
 
@@ -11,15 +13,27 @@ export const Hierarchy = (props) => {
 
     const [selected, setSelected] = useState();
 
+    const toast = useToast()
+
     const handleSelect = (name) => {
         const segments = datasetPath.split('\\');
         const path = segments.join('\\') + name;
+
+        console.log(path);
 
         setSelected(name);
 
         load_dataset(path).then((data) => {
             console.log("Loaded new dataset with " + data.num_files + " files");
             setDataset(data);
+        });
+
+        toast({
+            title: 'Dataset Changed',
+            description: path,
+            status: 'success',
+            duration: 5000,
+            isClosable: true,
         });
     }
 
