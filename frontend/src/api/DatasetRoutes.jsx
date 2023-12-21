@@ -2,6 +2,7 @@ import axios from "axios"
 import {toRouteUrl} from "../util/ApiUtil";
 import {Dataset} from "../models/Dataset";
 import {DatasetImage} from "../models/DatasetImage";
+import {Hierarchy} from "../models/Hierarchy";
 
 let axiosAbort = [];
 
@@ -18,11 +19,22 @@ const load_dataset = (path) => {
     const request = {path: path};
 
     return axios.get(toRouteUrl('load_dataset', request)).then(res => {
-        console.log(res);
         console.log(res.data);
-        return new Dataset(res.data.index, res.data.path, res.data.hierarchy, res.data.num_files, res.data.available_tags);
+        return new Dataset(res.data.index, res.data.path, res.data.num_files, res.data.available_tags);
     }).catch(err => {
-        console.log(err.response);
+        console.log(err);
+        return undefined;
+    });
+}
+
+const load_hierarchy = (path) => {
+    const request = {path: path};
+
+    return axios.get(toRouteUrl('load_hierarchy', request)).then(res => {
+        console.log(res.data);
+        return new Hierarchy(res.data.hierarchy);
+    }).catch(err => {
+        console.log(err);
         return undefined;
     });
 }
@@ -77,6 +89,7 @@ const deepdanbooru = (path, threshold) => {
 
 export {
     load_dataset,
+    load_hierarchy,
     load_image,
     save_caption,
     deepdanbooru,

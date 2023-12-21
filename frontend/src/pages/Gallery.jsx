@@ -23,17 +23,14 @@ import {
     ModalCloseButton,
 } from '@chakra-ui/react'
 
-import data from "bootstrap/js/src/dom/data";
-import {DirectoryTreeView} from "../components/DirectoryTreeView";
-
-
 
 export const Gallery = (props) => {
 
-    const {dataset, setIndex, setTabIndex} = props;
+    const {hierarchy, dataset, setIndex, setTabIndex} = props;
 
     const [images, setImages] = useState([]);
     const [hovered, setHovered] = useState(-1);
+
     const [range, setRange] = useState([]);
     const [requests, setRequests] = useState([]);
 
@@ -90,12 +87,23 @@ export const Gallery = (props) => {
     }
 
     useEffect(() => {
+        // Clear
+        setImages([]);
+        setHovered(-1);
+        setRange([]);
+        setRequests([]);
+        imageBuffer.range = [0,0];
+        imageBuffer.images = [];
+        setImagePreview({});
+    }, [dataset]);
+
+    useEffect(() => {
         // Dataset is not loaded yet.
         if(dataset.num_files <= 0)
             return;
 
         loadDatasetImages(range[0] - 1, range[1] - 1);
-    }, [dataset, range]);
+    }, [range]);
 
     useEffect(() => {
 
@@ -127,8 +135,6 @@ export const Gallery = (props) => {
         setHovered(index);
     }
 
-
-
     const ImageModal = (props) => {
 
         const { modalOpen } = props;
@@ -146,16 +152,15 @@ export const Gallery = (props) => {
         );
     }
 
+    //buffer: {imageBuffer.images.length} requests: {requests.length} total: {dataset.num_files}
+
     return (
         <>
             <ImageModal modalOpen={imagePreview.image}/>
             <HFlex gap={1} maxHeight='1000px'>
-                <BVFlex flexGrow={0} minWidth='12.5%'>
-                    <DirectoryTreeView files={(dataset.hierarchy) ? dataset.hierarchy : []} />
-                </BVFlex>
                 <VFlex maxWidth='80%'>
                     <BVFlex justifyContent='center' alignItems='center'>
-                        <Text>Showing Images from {range[0]}-{range[1]} images: {images.length} buffer: {imageBuffer.images.length} requests: {requests.length} total: {dataset.num_files}</Text>
+                        <Text>Showing Images from {range[0]}-{range[1]} / Loaded: {images.length}</Text>
                         <HFlex w='100%'>
                             <RangeSlider aria-label={['min', 'max']} min={2} max={(dataset.num_files > 0) ? dataset.num_files + 1 : 10} defaultValue={[1, 10]} onChange={(v) => setRange([v[0]-1, v[1]-1])}>
                                 <RangeSliderTrack>

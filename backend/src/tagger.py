@@ -38,9 +38,10 @@ class Tagger:
         self.num_files = None
 
     def load_dataset(self, *, path: str = None, files: [str] = None):
-        if path and not os.path.isdir(path):
+        if path:
             self.path = path
-            raise NotADirectoryError("Invalid dataset path", path)
+            if not os.path.isdir(path):
+                raise NotADirectoryError("Invalid dataset path", path)
 
         self.index = 0
         self.dataset = load_dataset(path=path, files=files)
@@ -170,4 +171,14 @@ def recursive_dir(path: str) -> [str]:
             r += recursive_dir(jf)
         elif os.path.isfile(jf):
             r.append(jf)
+    return r
+
+
+def recursive_dir_dir(path: str) -> [str]:
+    r = []
+    for f in os.listdir(path):
+        full_path = os.path.join(path, f)
+        if os.path.isdir(full_path):
+            r.append(full_path)
+            r += recursive_dir_dir(full_path)
     return r

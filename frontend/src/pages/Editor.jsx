@@ -448,7 +448,7 @@ export const Editor = (props) => {
                                         </HFlex>
                                     </Box>
                                     <HFlex>
-                                        <Slider flexGrow={1} w='50%' onChange={(val) => setIndex(val - 1)} value={dataset.index + 1} defaultValue={1} min={1} max={(dataset) ? dataset.num_files : 2}>
+                                        <Slider flexGrow={1} w='50%' onChange={(val) => setIndex(val - 1)} value={dataset.index + 1} defaultValue={1} min={1} max={(dataset.num_files) ? dataset.num_files : 2}>
                                             <SliderTrack>
                                             <SliderFilledTrack />
                                             </SliderTrack>
