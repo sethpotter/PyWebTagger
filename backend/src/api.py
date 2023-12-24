@@ -11,7 +11,6 @@ import torch
 import tqdm
 import numpy as np
 
-
 app = FastAPI()
 gelbooru = Gelbooru()
 tagger = Tagger()
@@ -34,6 +33,7 @@ app.add_middleware(
 async def home():
     return "View the backend documentation using https://localhost:8000/docs"
 
+
 @app.get("/deepdanbooru")
 async def deepdanbooru(path: str, threshold: float):
     # Code courtesy of https://github.com/AUTOMATIC1111/TorchDeepDanbooru
@@ -46,7 +46,9 @@ async def deepdanbooru(path: str, threshold: float):
         print('Running interrogate for the first time. Downloading DeepDanBooru model...')
         print('You can find this in the /models/ folder')
         os.mkdir('../models/')
-        download_url_to_file('https://github.com/AUTOMATIC1111/TorchDeepDanbooru/releases/download/v1/model-resnet_custom_v3.pt', model_path, progress=True)
+        download_url_to_file(
+            'https://github.com/AUTOMATIC1111/TorchDeepDanbooru/releases/download/v1/model-resnet_custom_v3.pt',
+            model_path, progress=True)
 
     model = deep_danbooru_model.DeepDanbooruModel()
     model.load_state_dict(torch.load(model_path))
@@ -86,7 +88,7 @@ async def load_hierarchy(path: str):
     def generate_folder_structure():
         root = {'name': os.path.basename(path), 'children': []}
 
-        cut_dirs = [d[len(path)+1:] for d in dirs]
+        cut_dirs = [d[len(path) + 1:] for d in dirs]
 
         for p in cut_dirs:
             current_folder = root
@@ -103,6 +105,7 @@ async def load_hierarchy(path: str):
 
     return {'hierarchy': generate_folder_structure()}
 
+
 @app.get("/get_duplicates")
 async def get_duplicates():
     return scan_duplicates(tagger.dataset)
@@ -116,6 +119,18 @@ async def load_image(index: int):
         encoded_string = base64.b64encode(image_file.read())
     return {'image': encoded_string, 'size': {'width': img.width, 'height': img.height}, 'path': dataset_image.path,
             'caption': dataset_image.caption}
+
+
+@app.get("/add_image")
+async def add_image(path: str = None, index: int = None):
+    tagger.add(path=path, index=index)
+    return {'Success'}
+
+
+@app.get("/remove_image")
+async def remove_image(path: str = None, index: int = None):
+    tagger.remove(path=path, index=index)
+    return {'Success'}
 
 
 @app.post("/save_caption")

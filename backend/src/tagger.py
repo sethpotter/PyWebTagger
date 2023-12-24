@@ -1,5 +1,6 @@
 import multiprocessing
 import os
+import shutil
 import re
 import traceback
 
@@ -66,21 +67,34 @@ class Tagger:
             raise LookupError("Dataset is empty")
         return self.dataset.index(path)
 
-    def add(self, path: str):
-        self.dataset.append(DatasetImage(path))
-
-    def remove(self, path: str = None):
-        if path is None:
-            # Program crashes on self.current() because if you keep removing it will crash.
-            self.dataset.remove(self.current())
+    def add(self, path: str, index: int = None):
+        new_path = self.path.join(os.path.basename(path))
+        if os.path.exists(new_path):
+            raise RuntimeError("File", path, "already exists in this dataset")
+        shutil.copyfile(path, new_path)
+        dataset_image = DatasetImage(new_path)
+        if index is not None:
+            self.dataset.insert(index, dataset_image)
         else:
-            if path in self.dataset:
-                self.dataset.remove(path)
-        # TODO Edge cases: when the dataset is 1, or when index is at the end of the dataset.
+            self.dataset.append(dataset_image)
 
-    def remove_at_index(self, index: int):
-        del self.dataset[index]
-        # TODO Edge cases: when the dataset is 1, or when index is at the end of the dataset.
+    def remove(self, *, path: str = None, index: int = None):
+        if path is not None:
+            image_index = next((j for i, j in self.dataset if i.path == path), None)
+        else:
+            image_index = self.index
+            if index is not None:
+                if index < 0 or index >= self.num_files:
+                    raise IndexError("Got index", index, "which is out of bounds of 0 to", self.num_files - 1)
+                image_index = index
+        if image_index <= self.index:
+            self.index -= 1
+        dataset_image = self.dataset[image_index]
+        del self.dataset[image_index]
+
+        new_path = "../datasets/" + os.path.dirname(dataset_image.path) + "/" + os.path.basename(dataset_image.path)
+        os.mkdir(new_path)
+        os.rename(dataset_image.path, new_path)
 
     def next(self):
         self.set_index(self.index + 1)
