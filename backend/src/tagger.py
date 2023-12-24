@@ -80,7 +80,7 @@ class Tagger:
 
     def remove(self, *, path: str = None, index: int = None):
         if path is not None:
-            image_index = next((j for i, j in self.dataset if i.path == path), None)
+            image_index = next((i for i, img in enumerate(self.dataset) if img.path == path), None)
         else:
             image_index = self.index
             if index is not None:
@@ -92,9 +92,12 @@ class Tagger:
         dataset_image = self.dataset[image_index]
         del self.dataset[image_index]
 
-        new_path = "../datasets/" + os.path.dirname(dataset_image.path) + "/" + os.path.basename(dataset_image.path)
-        os.mkdir(new_path)
-        os.rename(dataset_image.path, new_path)
+        directory = os.path.join("..\\datasets\\", os.path.basename(os.path.dirname(dataset_image.path)))
+        filename = os.path.basename(dataset_image.path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        shutil.move(dataset_image.path, os.path.join(directory, filename))
+        shutil.move(os.path.splitext(dataset_image.path)[0] + ".txt", os.path.join(directory, os.path.splitext(filename)[0] + ".txt"))
 
     def next(self):
         self.set_index(self.index + 1)

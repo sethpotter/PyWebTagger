@@ -2,4 +2,5 @@
 
 /backend/venv
 /frontend/node_modules
-/models/*
+/models/
+/datasets/
