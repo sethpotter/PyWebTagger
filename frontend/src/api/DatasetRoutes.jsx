@@ -57,6 +57,20 @@ const load_image = (index) => {
     return promise;
 }
 
+const add_image = () => {}
+
+const remove_image = (index) => {
+    const request = {index: index};
+
+    return axios.get(toRouteUrl('remove_image', request)).then(res => {
+        console.log(res);
+        return true;
+    }).catch(err => {
+        console.error(err);
+        return undefined;
+    });
+}
+
 const save_caption = (index, caption) => {
     const request = {
         index: index,
@@ -91,6 +105,8 @@ export {
     load_dataset,
     load_hierarchy,
     load_image,
+    add_image,
+    remove_image,
     save_caption,
     deepdanbooru,
     cancel_dataset_request

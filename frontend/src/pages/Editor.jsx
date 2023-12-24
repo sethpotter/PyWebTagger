@@ -27,7 +27,7 @@ import {
     NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Checkbox, Icon
 } from '@chakra-ui/react'
 import {VFlex, HFlex, BVFlex, BHFlex} from "../components/WrappedChakra"
-import {load_dataset, load_image, save_caption, deepdanbooru} from "../api/DatasetRoutes";
+import {load_dataset, load_image, save_caption, deepdanbooru, remove_image} from "../api/DatasetRoutes";
 import {appendDefaultProps} from "../util/ChakraUtil";
 import {Dataset} from "../models/Dataset";
 import {DatasetImage} from "../models/DatasetImage";
@@ -209,6 +209,12 @@ export const Editor = (props) => {
         console.log("Add tag: " + tag);
     }
 
+    const removeImage = () => {
+        remove_image(dataset.index).then(data => {
+            dataset.num_files -= 1;
+            setIndex(0);
+        });
+    }
 
     useEffect(() => {
         displayResizeButton();
@@ -462,6 +468,7 @@ export const Editor = (props) => {
                                 <Button colorScheme='blue' h onClick={() => setIndex(dataset.index + 1)}>Next</Button>
                             </HFlex>
                             <Button colorScheme='blue' h onClick={() => handleCaptionSave(dataset.index, datasetImage.caption)}>Save Caption</Button>
+                            <Button colorScheme='red' h onClick={() => removeImage()}>Remove Image</Button>
                         </VFlex>
                     </HFlex>
                 </VFlex>
